@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="API - RSocket" type="JetRunConfigurationType">
+    <option name="MAIN_CLASS_NAME" value="com.novatecgmbh.eventsourcing.axon.RsocketApiKt" />
+    <module name="apis.rsocket.main" />
+    <option name="PROGRAM_PARAMETERS" value="--server.port=8086" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
