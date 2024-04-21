@@ -9,6 +9,6 @@ data class RegisterUserDto(
     val email: String,
     val telephone: String
 ) {
-  fun toCommand(externalUserId: String) =
-      RegisterUserCommand(UserId(), externalUserId, firstname, lastname, email, telephone)
+    fun toCommand(externalUserId: String) =
+        RegisterUserCommand(UserId(), externalUserId, firstname, lastname, email, telephone)
 }

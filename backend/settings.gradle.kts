@@ -9,9 +9,12 @@ pluginManagement {
     val springBootVersion: String by settings
     val kotlinVersion: String by settings
     val springDependencyManagementPluginVersion: String by settings
+    val spotlessVersion: String by settings
+
     plugins {
         id("io.spring.dependency-management") version springDependencyManagementPluginVersion
         id("org.springframework.boot") version springBootVersion
+        id("com.diffplug.spotless") version spotlessVersion
         kotlin("jvm") version kotlinVersion
         kotlin("plugin.jpa") version kotlinVersion
         kotlin("plugin.spring") version kotlinVersion

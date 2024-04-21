@@ -9,6 +9,6 @@ data class RescheduleProjectDto(
     val startDate: LocalDate,
     val deadline: LocalDate
 ) {
-  fun toCommand(projectId: ProjectId) =
-      RescheduleProjectCommand(projectId, version, startDate, deadline)
+    fun toCommand(projectId: ProjectId) =
+        RescheduleProjectCommand(projectId, version, startDate, deadline)
 }

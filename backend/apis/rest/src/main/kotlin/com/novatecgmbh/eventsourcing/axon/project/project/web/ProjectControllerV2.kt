@@ -28,95 +28,99 @@ class ProjectControllerV2(
     private val commandGateway: CommandGateway,
     private val queryGateway: QueryGateway
 ) {
-  @GetMapping
-  fun getAllProjects(
-      @AuthenticationPrincipal user: RegisteredUserPrincipal
-  ): CompletableFuture<List<ProjectQueryResult>> =
-      queryGateway.queryMany(MyProjectsQuery(user.identifier))
+    @GetMapping
+    fun getAllProjects(
+        @AuthenticationPrincipal user: RegisteredUserPrincipal
+    ): CompletableFuture<List<ProjectQueryResult>> =
+        queryGateway.queryMany(MyProjectsQuery(user.identifier))
 
-  @GetMapping(produces = [APPLICATION_NDJSON_VALUE])
-  fun getAllProjectsAndUpdates(
-      @AuthenticationPrincipal user: RegisteredUserPrincipal
-  ): Flux<ProjectQueryResult> {
-    val query =
-        queryGateway.subscriptionQuery(
-            MyProjectsQuery(user.identifier),
-            ResponseTypes.multipleInstancesOf(ProjectQueryResult::class.java),
-            ResponseTypes.instanceOf(ProjectQueryResult::class.java))
+    @GetMapping(produces = [APPLICATION_NDJSON_VALUE])
+    fun getAllProjectsAndUpdates(
+        @AuthenticationPrincipal user: RegisteredUserPrincipal
+    ): Flux<ProjectQueryResult> {
+        val query =
+            queryGateway.subscriptionQuery(
+                MyProjectsQuery(user.identifier),
+                ResponseTypes.multipleInstancesOf(ProjectQueryResult::class.java),
+                ResponseTypes.instanceOf(ProjectQueryResult::class.java)
+            )
 
-    return query
-        .initialResult()
-        .flatMapMany { Flux.fromIterable(it) }
-        .concatWith(query.updates())
-        .doFinally { query.cancel() }
-  }
+        return query
+            .initialResult()
+            .flatMapMany { Flux.fromIterable(it) }
+            .concatWith(query.updates())
+            .doFinally { query.cancel() }
+    }
 
-  @GetMapping("/{projectId}")
-  fun getProjectById(
-      @PathVariable("projectId") projectId: ProjectId
-  ): ResponseEntity<ProjectQueryResult> =
-      queryGateway
-          .queryOptional<ProjectQueryResult, ProjectQuery>(ProjectQuery(projectId))
-          .join()
-          .map { ResponseEntity(it, HttpStatus.OK) }
-          .orElse(ResponseEntity(HttpStatus.NOT_FOUND))
+    @GetMapping("/{projectId}")
+    fun getProjectById(
+        @PathVariable("projectId") projectId: ProjectId
+    ): ResponseEntity<ProjectQueryResult> =
+        queryGateway
+            .queryOptional<ProjectQueryResult, ProjectQuery>(ProjectQuery(projectId))
+            .join()
+            .map { ResponseEntity(it, HttpStatus.OK) }
+            .orElse(ResponseEntity(HttpStatus.NOT_FOUND))
 
-  @GetMapping(path = ["/{projectId}"], produces = [APPLICATION_NDJSON_VALUE])
-  fun getProjectByIdAndUpdates(
-      @PathVariable("projectId") projectId: ProjectId
-  ): Flux<ProjectQueryResult> {
-    val query =
-        queryGateway.subscriptionQuery(
-            ProjectQuery(projectId),
-            ResponseTypes.instanceOf(ProjectQueryResult::class.java),
-            ResponseTypes.instanceOf(ProjectQueryResult::class.java))
+    @GetMapping(path = ["/{projectId}"], produces = [APPLICATION_NDJSON_VALUE])
+    fun getProjectByIdAndUpdates(
+        @PathVariable("projectId") projectId: ProjectId
+    ): Flux<ProjectQueryResult> {
+        val query =
+            queryGateway.subscriptionQuery(
+                ProjectQuery(projectId),
+                ResponseTypes.instanceOf(ProjectQueryResult::class.java),
+                ResponseTypes.instanceOf(ProjectQueryResult::class.java)
+            )
 
-    return query.initialResult().concatWith(query.updates()).doFinally { query.cancel() }
-  }
+        return query.initialResult().concatWith(query.updates()).doFinally { query.cancel() }
+    }
 
-  @GetMapping("/{projectId}/details")
-  fun getProjectDetailsById(
-      @PathVariable("projectId") projectId: ProjectId
-  ): ResponseEntity<ProjectDetailsQueryResult> =
-      queryGateway
-          .queryOptional<ProjectDetailsQueryResult, ProjectDetailsQuery>(
-              ProjectDetailsQuery(projectId))
-          .join()
-          .map { ResponseEntity(it, HttpStatus.OK) }
-          .orElse(ResponseEntity(HttpStatus.NOT_FOUND))
+    @GetMapping("/{projectId}/details")
+    fun getProjectDetailsById(
+        @PathVariable("projectId") projectId: ProjectId
+    ): ResponseEntity<ProjectDetailsQueryResult> =
+        queryGateway
+            .queryOptional<ProjectDetailsQueryResult, ProjectDetailsQuery>(
+                ProjectDetailsQuery(projectId)
+            )
+            .join()
+            .map { ResponseEntity(it, HttpStatus.OK) }
+            .orElse(ResponseEntity(HttpStatus.NOT_FOUND))
 
-  @GetMapping(path = ["/{projectId}/details"], produces = [APPLICATION_NDJSON_VALUE])
-  fun getProjectDetailsByIdAndUpdates(
-      @PathVariable("projectId") projectId: ProjectId
-  ): Flux<ProjectDetailsQueryResult> {
-    val query =
-        queryGateway.subscriptionQuery(
-            ProjectDetailsQuery(projectId),
-            ResponseTypes.instanceOf(ProjectDetailsQueryResult::class.java),
-            ResponseTypes.instanceOf(ProjectDetailsQueryResult::class.java))
+    @GetMapping(path = ["/{projectId}/details"], produces = [APPLICATION_NDJSON_VALUE])
+    fun getProjectDetailsByIdAndUpdates(
+        @PathVariable("projectId") projectId: ProjectId
+    ): Flux<ProjectDetailsQueryResult> {
+        val query =
+            queryGateway.subscriptionQuery(
+                ProjectDetailsQuery(projectId),
+                ResponseTypes.instanceOf(ProjectDetailsQueryResult::class.java),
+                ResponseTypes.instanceOf(ProjectDetailsQueryResult::class.java)
+            )
 
-    return query.initialResult().concatWith(query.updates()).doFinally { query.cancel() }
-  }
+        return query.initialResult().concatWith(query.updates()).doFinally { query.cancel() }
+    }
 
-  @PostMapping
-  fun createProject(@RequestBody body: CreateProjectDto): CompletableFuture<ProjectId> =
-      createProjectWithId(ProjectId(), body)
+    @PostMapping
+    fun createProject(@RequestBody body: CreateProjectDto): CompletableFuture<ProjectId> =
+        createProjectWithId(ProjectId(), body)
 
-  @PostMapping("/{projectId}")
-  fun createProjectWithId(
-      @PathVariable("projectId") projectId: ProjectId,
-      @RequestBody body: CreateProjectDto,
-  ): CompletableFuture<ProjectId> = commandGateway.send(body.toCommand(projectId))
+    @PostMapping("/{projectId}")
+    fun createProjectWithId(
+        @PathVariable("projectId") projectId: ProjectId,
+        @RequestBody body: CreateProjectDto,
+    ): CompletableFuture<ProjectId> = commandGateway.send(body.toCommand(projectId))
 
-  @PostMapping("/{projectId}/rename")
-  fun renameProject(
-      @PathVariable("projectId") projectId: ProjectId,
-      @RequestBody body: RenameProjectDto,
-  ): CompletableFuture<Unit> = commandGateway.send(body.toCommand(projectId))
+    @PostMapping("/{projectId}/rename")
+    fun renameProject(
+        @PathVariable("projectId") projectId: ProjectId,
+        @RequestBody body: RenameProjectDto,
+    ): CompletableFuture<Unit> = commandGateway.send(body.toCommand(projectId))
 
-  @PostMapping("/{projectId}/reschedule")
-  fun renameProject(
-      @PathVariable("projectId") projectId: ProjectId,
-      @RequestBody body: RescheduleProjectDto,
-  ): CompletableFuture<Unit> = commandGateway.send(body.toCommand(projectId))
+    @PostMapping("/{projectId}/reschedule")
+    fun renameProject(
+        @PathVariable("projectId") projectId: ProjectId,
+        @RequestBody body: RescheduleProjectDto,
+    ): CompletableFuture<Unit> = commandGateway.send(body.toCommand(projectId))
 }

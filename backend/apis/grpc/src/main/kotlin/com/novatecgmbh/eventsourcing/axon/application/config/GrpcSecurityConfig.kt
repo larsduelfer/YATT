@@ -28,40 +28,40 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 @EnableGlobalMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = true)
 class GrpcSecurityConfig : GlobalMethodSecurityConfiguration() {
 
-  @Bean
-  fun jwtDecoder(properties: OAuth2ResourceServerProperties): JwtDecoder {
-    return JwtDecoders.fromOidcIssuerLocation(properties.jwt.issuerUri)
-  }
+    @Bean
+    fun jwtDecoder(properties: OAuth2ResourceServerProperties): JwtDecoder {
+        return JwtDecoders.fromOidcIssuerLocation(properties.jwt.issuerUri)
+    }
 
-  @Bean
-  fun customUserAuthenticationConverter(userDetailsService: UserDetailsService) =
-      CustomUserAuthenticationConverter(userDetailsService)
+    @Bean
+    fun customUserAuthenticationConverter(userDetailsService: UserDetailsService) =
+        CustomUserAuthenticationConverter(userDetailsService)
 
-  @Bean
-  fun jwtAuthenticationProvider(
-      decoder: JwtDecoder,
-      jwtAuthenticationConverter: CustomUserAuthenticationConverter
-  ) =
-      JwtAuthenticationProvider(decoder).apply {
-        setJwtAuthenticationConverter(jwtAuthenticationConverter)
-      }
+    @Bean
+    fun jwtAuthenticationProvider(
+        decoder: JwtDecoder,
+        jwtAuthenticationConverter: CustomUserAuthenticationConverter
+    ) =
+        JwtAuthenticationProvider(decoder).apply {
+            setJwtAuthenticationConverter(jwtAuthenticationConverter)
+        }
 
-  @Bean
-  fun authenticationManager(
-      jwtAuthenticationProvider: JwtAuthenticationProvider
-  ): AuthenticationManager = ProviderManager(jwtAuthenticationProvider)
+    @Bean
+    fun authenticationManager(
+        jwtAuthenticationProvider: JwtAuthenticationProvider
+    ): AuthenticationManager = ProviderManager(jwtAuthenticationProvider)
 
-  @Bean
-  fun grpcAuthenticationReader(jwtAuthenticationProvider: JwtAuthenticationProvider) =
-      BearerAuthenticationReader {
-    BearerTokenAuthenticationToken(it)
-  }
+    @Bean
+    fun grpcAuthenticationReader(jwtAuthenticationProvider: JwtAuthenticationProvider) =
+        BearerAuthenticationReader {
+            BearerTokenAuthenticationToken(it)
+        }
 
-  @Bean
-  fun grpcSecurityMetadataSource(): GrpcSecurityMetadataSource? =
-      ManualGrpcSecurityMetadataSource().apply { setDefault(AccessPredicate.authenticated()) }
+    @Bean
+    fun grpcSecurityMetadataSource(): GrpcSecurityMetadataSource? =
+        ManualGrpcSecurityMetadataSource().apply { setDefault(AccessPredicate.authenticated()) }
 
-  @Bean
-  override fun accessDecisionManager(): AccessDecisionManager =
-      UnanimousBased(ArrayList<AccessDecisionVoter<*>>().apply { add(AccessPredicateVoter()) })
+    @Bean
+    override fun accessDecisionManager(): AccessDecisionManager =
+        UnanimousBased(ArrayList<AccessDecisionVoter<*>>().apply { add(AccessPredicateVoter()) })
 }

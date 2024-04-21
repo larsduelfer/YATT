@@ -4,7 +4,7 @@ import com.novatecgmbh.eventsourcing.axon.company.company.api.CompanyId
 import com.novatecgmbh.eventsourcing.axon.company.employee.api.EmployeeId
 import com.novatecgmbh.eventsourcing.axon.company.employee.api.EmployeeQueryResult
 import com.novatecgmbh.eventsourcing.axon.user.api.UserId
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "employee")
@@ -22,14 +22,15 @@ class EmployeeProjection(
     @Column(nullable = false) var isAdmin: Boolean = false,
     @Column(nullable = false) var isProjectManager: Boolean = false
 ) {
-  fun toQueryResult() =
-      EmployeeQueryResult(
-          identifier,
-          version,
-          companyId,
-          userId,
-          userFirstName,
-          userLastName,
-          isAdmin,
-          isProjectManager)
+    fun toQueryResult() =
+        EmployeeQueryResult(
+            identifier,
+            version,
+            companyId,
+            userId,
+            userFirstName,
+            userLastName,
+            isAdmin,
+            isProjectManager
+        )
 }

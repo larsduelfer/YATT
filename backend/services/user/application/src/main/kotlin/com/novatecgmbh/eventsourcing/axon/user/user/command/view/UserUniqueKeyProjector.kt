@@ -8,12 +8,14 @@ import org.springframework.stereotype.Component
 @Component
 @ProcessingGroup("user-unique-key-projector")
 class UserUniqueKeyProjector(private val repository: UserUniqueKeyRepository) {
-  @EventHandler
-  fun on(event: UserRegisteredEvent) {
-    repository.save(
-        UserUniqueKeyProjection(
-            identifier = event.aggregateIdentifier,
-            externalUserId = event.externalUserId,
-            email = event.email))
-  }
+    @EventHandler
+    fun on(event: UserRegisteredEvent) {
+        repository.save(
+            UserUniqueKeyProjection(
+                identifier = event.aggregateIdentifier,
+                externalUserId = event.externalUserId,
+                email = event.email
+            )
+        )
+    }
 }

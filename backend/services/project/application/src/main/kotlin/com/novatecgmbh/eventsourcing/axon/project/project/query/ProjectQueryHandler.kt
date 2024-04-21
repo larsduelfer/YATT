@@ -17,24 +17,29 @@ class ProjectQueryHandler(
     private val aclRepository: ProjectAclRepository
 ) {
 
-  @QueryHandler
-  fun handle(query: ProjectQuery, @AuditUserId userId: String): Optional<ProjectQueryResult> =
-      authService.runWhenAuthorizedForProject(UserId(userId), query.projectId) {
-        repository.findById(query.projectId).map { it.toQueryResult() }
-      }
+    @QueryHandler
+    fun handle(query: ProjectQuery, @AuditUserId userId: String): Optional<ProjectQueryResult> =
+        authService.runWhenAuthorizedForProject(UserId(userId), query.projectId) {
+            repository.findById(query.projectId).map { it.toQueryResult() }
+        }
 
-  @QueryHandler
-  fun handle(query: MyProjectsQuery, @AuditUserId userId: String): Iterable<ProjectQueryResult> =
-      aclRepository.findAllAccessibleProjectsByUser(UserId(userId)).map { ProjectId(it) }.let {
-        repository.findAllByIdentifierInOrderByName(it).map(ProjectProjection::toQueryResult)
-      }
+    @QueryHandler
+    fun handle(query: MyProjectsQuery, @AuditUserId userId: String): Iterable<ProjectQueryResult> =
+        aclRepository
+            .findAllAccessibleProjectsByUser(UserId(userId))
+            .map { ProjectId(it) }
+            .let {
+                repository
+                    .findAllByIdentifierInOrderByName(it)
+                    .map(ProjectProjection::toQueryResult)
+            }
 
-  @QueryHandler
-  fun handle(
-      query: ProjectDetailsQuery,
-      @AuditUserId userId: String
-  ): Optional<ProjectDetailsQueryResult> =
-      authService.runWhenAuthorizedForProject(UserId(userId), query.projectId) {
-        detailsRepository.findById(query.projectId).map { it.toQueryResult() }
-      }
+    @QueryHandler
+    fun handle(
+        query: ProjectDetailsQuery,
+        @AuditUserId userId: String
+    ): Optional<ProjectDetailsQueryResult> =
+        authService.runWhenAuthorizedForProject(UserId(userId), query.projectId) {
+            detailsRepository.findById(query.projectId).map { it.toQueryResult() }
+        }
 }

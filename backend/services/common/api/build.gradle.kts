@@ -8,6 +8,6 @@ group = "${group}.common"
 dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.axonframework:axon-modelling")
-    implementation("javax.persistence:javax.persistence-api")
+    implementation("jakarta.persistence:jakarta.persistence-api")
     implementation("org.springframework.boot:spring-boot-starter-security")
 }

@@ -14,13 +14,18 @@ import org.springframework.stereotype.Controller
 @Controller
 class ParticipantMutationsController(val commandGateway: CommandGateway) {
 
-  @MutationMapping
-  fun createParticipant(
-      @Argument projectIdentifier: ProjectId,
-      @Argument companyIdentifier: CompanyId,
-      @Argument userIdentifier: UserId
-  ): CompletableFuture<ParticipantId> =
-      commandGateway.send(
-          CreateParticipantCommand(
-              ParticipantId(), projectIdentifier, companyIdentifier, userIdentifier))
+    @MutationMapping
+    fun createParticipant(
+        @Argument projectIdentifier: ProjectId,
+        @Argument companyIdentifier: CompanyId,
+        @Argument userIdentifier: UserId
+    ): CompletableFuture<ParticipantId> =
+        commandGateway.send(
+            CreateParticipantCommand(
+                ParticipantId(),
+                projectIdentifier,
+                companyIdentifier,
+                userIdentifier
+            )
+        )
 }

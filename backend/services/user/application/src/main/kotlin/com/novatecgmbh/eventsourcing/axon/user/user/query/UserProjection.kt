@@ -2,10 +2,10 @@ package com.novatecgmbh.eventsourcing.axon.user.user.query
 
 import com.novatecgmbh.eventsourcing.axon.user.api.UserId
 import com.novatecgmbh.eventsourcing.axon.user.api.UserQueryResult
-import javax.persistence.Column
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.Table
+import jakarta.persistence.Column
+import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Entity
+import jakarta.persistence.Table
 
 @Entity
 @Table(name = "users")
@@ -17,5 +17,6 @@ class UserProjection(
     @Column(nullable = false) var email: String,
     @Column(nullable = false) var telephone: String
 ) {
-  fun toQueryResult() = UserQueryResult(identifier, externalUserId, firstname, lastname, email, telephone)
+    fun toQueryResult() =
+        UserQueryResult(identifier, externalUserId, firstname, lastname, email, telephone)
 }

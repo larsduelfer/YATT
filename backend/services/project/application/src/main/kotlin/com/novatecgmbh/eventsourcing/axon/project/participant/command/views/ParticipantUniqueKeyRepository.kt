@@ -10,9 +10,9 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ParticipantUniqueKeyRepository :
     JpaRepository<ParticipantUniqueKeyProjection, ParticipantId> {
-  fun existsByProjectIdAndCompanyIdAndUserId(
-      projectId: ProjectId,
-      companyId: CompanyId,
-      userId: UserId
-  ): Boolean
+    fun existsByProjectIdAndCompanyIdAndUserId(
+        projectId: ProjectId,
+        companyId: CompanyId,
+        userId: UserId
+    ): Boolean
 }

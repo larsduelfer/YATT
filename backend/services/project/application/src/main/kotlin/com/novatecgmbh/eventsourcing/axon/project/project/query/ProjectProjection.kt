@@ -5,9 +5,9 @@ import com.novatecgmbh.eventsourcing.axon.company.company.api.CompanyId
 import com.novatecgmbh.eventsourcing.axon.project.project.api.ProjectId
 import com.novatecgmbh.eventsourcing.axon.project.project.api.ProjectQueryResult
 import com.novatecgmbh.eventsourcing.axon.project.project.api.ProjectStatus
+import jakarta.persistence.*
+import jakarta.persistence.EnumType.STRING
 import java.time.LocalDate
-import javax.persistence.*
-import javax.persistence.EnumType.STRING
 
 @Entity
 @Table(name = "projects")
@@ -20,21 +20,27 @@ class ProjectProjection(
     @Embedded
     @AttributeOverrides(
         AttributeOverride(
-            name = "identifier.identifier", column = Column(name = "companyId", nullable = false)),
+            name = "identifier.identifier",
+            column = Column(name = "companyId", nullable = false)
+        ),
         AttributeOverride(
-            name = "displayName", column = Column(name = "companyName", nullable = true)))
+            name = "displayName",
+            column = Column(name = "companyName", nullable = true)
+        )
+    )
     var companyReference: AggregateReference<CompanyId>,
     @Column(nullable = false) @Enumerated(STRING) var status: ProjectStatus,
     var actualEndDate: LocalDate? = null
 ) {
-  fun toQueryResult() =
-      ProjectQueryResult(
-          identifier,
-          version,
-          name,
-          plannedStartDate,
-          deadline,
-          companyReference,
-          status,
-          actualEndDate)
+    fun toQueryResult() =
+        ProjectQueryResult(
+            identifier,
+            version,
+            name,
+            plannedStartDate,
+            deadline,
+            companyReference,
+            status,
+            actualEndDate
+        )
 }

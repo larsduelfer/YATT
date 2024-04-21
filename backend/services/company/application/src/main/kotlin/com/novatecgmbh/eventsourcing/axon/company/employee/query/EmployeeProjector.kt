@@ -20,81 +20,92 @@ class EmployeeProjector(
     private val queryUpdateEmitter: QueryUpdateEmitter,
     private val queryGateway: QueryGateway
 ) {
-  @EventHandler
-  fun on(event: EmployeeCreatedEvent, @SequenceNumber aggregateVersion: Long) {
-    val user = queryGateway.queryOptional<UserQueryResult, UserQuery>(UserQuery(event.userId)).get()
-    saveProjection(
-        EmployeeProjection(
-            identifier = event.aggregateIdentifier,
-            version = aggregateVersion,
-            companyId = event.companyId,
-            userId = event.userId,
-            userFirstName = user.map { it.firstname }.orElse(null),
-            userLastName = user.map { it.lastname }.orElse(null))
-    )
-  }
-
-  @EventHandler
-  fun on(event: AdminPermissionGrantedForEmployeeEvent, @SequenceNumber aggregateVersion: Long) {
-    updateProjection(event.aggregateIdentifier) {
-      it.isAdmin = true
-      it.version = aggregateVersion
-    }
-  }
-
-  @EventHandler
-  fun on(event: AdminPermissionRemovedFromEmployeeEvent, @SequenceNumber aggregateVersion: Long) {
-    updateProjection(event.aggregateIdentifier) {
-      it.isAdmin = false
-      it.version = aggregateVersion
-    }
-  }
-
-  @EventHandler
-  fun on(
-      event: ProjectManagerPermissionGrantedForEmployeeEvent,
-      @SequenceNumber aggregateVersion: Long
-  ) {
-    updateProjection(event.aggregateIdentifier) {
-      it.isProjectManager = true
-      it.version = aggregateVersion
-    }
-  }
-
-  @EventHandler
-  fun on(
-      event: ProjectManagerPermissionRemovedFromEmployeeEvent,
-      @SequenceNumber aggregateVersion: Long
-  ) {
-    updateProjection(event.aggregateIdentifier) {
-      it.isProjectManager = false
-      it.version = aggregateVersion
-    }
-  }
-
-  private fun updateProjection(identifier: EmployeeId, stateChanges: (EmployeeProjection) -> Unit) {
-    repository.findById(identifier).get().also {
-      stateChanges.invoke(it)
-      saveProjection(it)
-    }
-  }
-
-  private fun saveProjection(projection: EmployeeProjection) {
-    repository.save(projection).also { savedProjection -> updateQuerySubscribers(savedProjection) }
-  }
-
-  private fun updateQuerySubscribers(employee: EmployeeProjection) {
-    queryUpdateEmitter.emit<EmployeesByCompanyQuery, EmployeeQueryResult>(
-        employee.toQueryResult()) { query -> query.companyId == employee.companyId }
-
-    queryUpdateEmitter.emit<EmployeeQuery, EmployeeQueryResult>(employee.toQueryResult()) { query ->
-      query.employeeId == employee.identifier
+    @EventHandler
+    fun on(event: EmployeeCreatedEvent, @SequenceNumber aggregateVersion: Long) {
+        val user =
+            queryGateway.queryOptional<UserQueryResult, UserQuery>(UserQuery(event.userId)).get()
+        saveProjection(
+            EmployeeProjection(
+                identifier = event.aggregateIdentifier,
+                version = aggregateVersion,
+                companyId = event.companyId,
+                userId = event.userId,
+                userFirstName = user.map { it.firstname }.orElse(null),
+                userLastName = user.map { it.lastname }.orElse(null)
+            )
+        )
     }
 
-    queryUpdateEmitter.emit<AllEmployeesQuery, EmployeeQueryResult>(employee.toQueryResult()) {
-      true
+    @EventHandler
+    fun on(event: AdminPermissionGrantedForEmployeeEvent, @SequenceNumber aggregateVersion: Long) {
+        updateProjection(event.aggregateIdentifier) {
+            it.isAdmin = true
+            it.version = aggregateVersion
+        }
     }
-  }
 
-  @ResetHandler fun reset() = repository.deleteAll()
+    @EventHandler
+    fun on(event: AdminPermissionRemovedFromEmployeeEvent, @SequenceNumber aggregateVersion: Long) {
+        updateProjection(event.aggregateIdentifier) {
+            it.isAdmin = false
+            it.version = aggregateVersion
+        }
+    }
+
+    @EventHandler
+    fun on(
+        event: ProjectManagerPermissionGrantedForEmployeeEvent,
+        @SequenceNumber aggregateVersion: Long
+    ) {
+        updateProjection(event.aggregateIdentifier) {
+            it.isProjectManager = true
+            it.version = aggregateVersion
+        }
+    }
+
+    @EventHandler
+    fun on(
+        event: ProjectManagerPermissionRemovedFromEmployeeEvent,
+        @SequenceNumber aggregateVersion: Long
+    ) {
+        updateProjection(event.aggregateIdentifier) {
+            it.isProjectManager = false
+            it.version = aggregateVersion
+        }
+    }
+
+    private fun updateProjection(
+        identifier: EmployeeId,
+        stateChanges: (EmployeeProjection) -> Unit
+    ) {
+        repository.findById(identifier).get().also {
+            stateChanges.invoke(it)
+            saveProjection(it)
+        }
+    }
+
+    private fun saveProjection(projection: EmployeeProjection) {
+        repository.save(projection).also { savedProjection ->
+            updateQuerySubscribers(savedProjection)
+        }
+    }
+
+    private fun updateQuerySubscribers(employee: EmployeeProjection) {
+        queryUpdateEmitter.emit<EmployeesByCompanyQuery, EmployeeQueryResult>(
+            employee.toQueryResult()
+        ) { query ->
+            query.companyId == employee.companyId
+        }
+
+        queryUpdateEmitter.emit<EmployeeQuery, EmployeeQueryResult>(employee.toQueryResult()) {
+            query ->
+            query.employeeId == employee.identifier
+        }
+
+        queryUpdateEmitter.emit<AllEmployeesQuery, EmployeeQueryResult>(employee.toQueryResult()) {
+            true
+        }
+    }
+
+    @ResetHandler fun reset() = repository.deleteAll()
 }

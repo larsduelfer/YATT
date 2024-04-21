@@ -54,7 +54,7 @@ create table tasks
     name        varchar(255) not null,
     project_id  varchar(255) not null,
     start_date  date         not null,
-    status      int4         not null,
+    status      smallint     not null,
     version     int8         not null,
     primary key (identifier)
 );

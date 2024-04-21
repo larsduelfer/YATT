@@ -23,38 +23,38 @@ class ProjectAclProjector(
     val projectAclRepository: ProjectAclRepository
 ) {
 
-  @EventHandler
-  fun on(event: ProjectManagerPermissionGrantedForEmployeeEvent) =
-      findEmployee(event.aggregateIdentifier).run {
-        grantCreateProjectPermission(companyId, userId)
-      }
+    @EventHandler
+    fun on(event: ProjectManagerPermissionGrantedForEmployeeEvent) =
+        findEmployee(event.aggregateIdentifier).run {
+            grantCreateProjectPermission(companyId, userId)
+        }
 
-  fun grantCreateProjectPermission(companyId: CompanyId, userId: UserId) =
-      ProjectAcl(ProjectAclKey(COMPANY, companyId.toString(), userId, CREATE_PROJECT))
-          .run(projectAclRepository::save)
+    fun grantCreateProjectPermission(companyId: CompanyId, userId: UserId) =
+        ProjectAcl(ProjectAclKey(COMPANY, companyId.toString(), userId, CREATE_PROJECT))
+            .run(projectAclRepository::save)
 
-  @EventHandler
-  fun on(event: ProjectManagerPermissionRemovedFromEmployeeEvent) =
-      findEmployee(event.aggregateIdentifier).run {
-        revokeCreateProjectPermission(companyId, userId)
-      }
+    @EventHandler
+    fun on(event: ProjectManagerPermissionRemovedFromEmployeeEvent) =
+        findEmployee(event.aggregateIdentifier).run {
+            revokeCreateProjectPermission(companyId, userId)
+        }
 
-  fun revokeCreateProjectPermission(companyId: CompanyId, userId: UserId) =
-      ProjectAclKey(COMPANY, companyId.toString(), userId, CREATE_PROJECT)
-          .run(projectAclRepository::deleteById)
+    fun revokeCreateProjectPermission(companyId: CompanyId, userId: UserId) =
+        ProjectAclKey(COMPANY, companyId.toString(), userId, CREATE_PROJECT)
+            .run(projectAclRepository::deleteById)
 
-  fun findEmployee(employeeId: EmployeeId): EmployeeQueryResult =
-      queryGateway.query<EmployeeQueryResult, EmployeeQuery>(EmployeeQuery(employeeId)).get()
+    fun findEmployee(employeeId: EmployeeId): EmployeeQueryResult =
+        queryGateway.query<EmployeeQueryResult, EmployeeQuery>(EmployeeQuery(employeeId)).get()
 
-  @EventHandler
-  fun on(event: ParticipantCreatedEvent) = grantAccessToProject(event.projectId, event.userId)
+    @EventHandler
+    fun on(event: ParticipantCreatedEvent) = grantAccessToProject(event.projectId, event.userId)
 
-  fun grantAccessToProject(projectId: ProjectId, userId: UserId) =
-      ProjectAcl(ProjectAclKey(PROJECT, projectId.toString(), userId, ACCESS_PROJECT))
-          .run(projectAclRepository::save)
+    fun grantAccessToProject(projectId: ProjectId, userId: UserId) =
+        ProjectAcl(ProjectAclKey(PROJECT, projectId.toString(), userId, ACCESS_PROJECT))
+            .run(projectAclRepository::save)
 
-  @ResetHandler
-  fun reset() {
-    projectAclRepository.deleteAll()
-  }
+    @ResetHandler
+    fun reset() {
+        projectAclRepository.deleteAll()
+    }
 }

@@ -14,27 +14,35 @@ import org.springframework.stereotype.Controller
 @Controller
 class UserMutationsController(val commandGateway: CommandGateway) {
 
-  @MutationMapping
-  fun registerUser(
-      @Argument firstname: String,
-      @Argument lastname: String,
-      @Argument email: String,
-      @Argument telephone: String,
-  ): CompletableFuture<UserId> =
-      SecurityContextHolder.getContext().authentication.principal.let {
-        if (it is UnregisteredUserPrincipal) {
-          commandGateway.send(
-              RegisterUserCommand(UserId(), it.username, firstname, lastname, email, telephone))
-        } else {
-          throw IllegalStateException("User already registered")
+    @MutationMapping
+    fun registerUser(
+        @Argument firstname: String,
+        @Argument lastname: String,
+        @Argument email: String,
+        @Argument telephone: String,
+    ): CompletableFuture<UserId> =
+        SecurityContextHolder.getContext().authentication.principal.let {
+            if (it is UnregisteredUserPrincipal) {
+                commandGateway.send(
+                    RegisterUserCommand(
+                        UserId(),
+                        it.username,
+                        firstname,
+                        lastname,
+                        email,
+                        telephone
+                    )
+                )
+            } else {
+                throw IllegalStateException("User already registered")
+            }
         }
-      }
 
-  @MutationMapping
-  fun renameUser(
-      @Argument identifier: UserId,
-      @Argument firstname: String,
-      @Argument lastname: String
-  ): CompletableFuture<Long> =
-      commandGateway.send(RenameUserCommand(identifier, firstname, lastname))
+    @MutationMapping
+    fun renameUser(
+        @Argument identifier: UserId,
+        @Argument firstname: String,
+        @Argument lastname: String
+    ): CompletableFuture<Long> =
+        commandGateway.send(RenameUserCommand(identifier, firstname, lastname))
 }

@@ -1,7 +1,10 @@
-create sequence hibernate_sequence start 1 increment 1;
+
+    create sequence association_value_entry_seq start with 1 increment by 50;
+
+    create sequence domain_event_entry_seq start with 1 increment by 50;
 
     create table association_value_entry (
-       id int8 not null,
+        id bigint not null,
         association_key varchar(255) not null,
         association_value varchar(255),
         saga_id varchar(255) not null,
@@ -9,22 +12,50 @@ create sequence hibernate_sequence start 1 increment 1;
         primary key (id)
     );
 
-    create table domain_event_entry (
-       global_index int8 not null,
+    create table dead_letter_entry (
+        dead_letter_id varchar(255) not null,
+        cause_message varchar(1023),
+        cause_type varchar(255),
+        diagnostics oid,
+        enqueued_at timestamp(6) with time zone not null,
+        last_touched timestamp(6) with time zone,
+        aggregate_identifier varchar(255),
         event_identifier varchar(255) not null,
+        message_type varchar(255) not null,
+        meta_data oid,
+        payload oid not null,
+        payload_revision varchar(255),
+        payload_type varchar(255) not null,
+        sequence_number bigint,
+        time_stamp varchar(255) not null,
+        token oid,
+        token_type varchar(255),
+        type varchar(255),
+        processing_group varchar(255) not null,
+        processing_started timestamp(6) with time zone,
+        sequence_identifier varchar(255) not null,
+        sequence_index bigint not null,
+        primary key (dead_letter_id),
+        unique (processing_group, sequence_identifier, sequence_index)
+    );
+
+    create table domain_event_entry (
+        global_index bigint not null,
+        event_identifier varchar(255) not null unique,
         meta_data oid,
         payload oid not null,
         payload_revision varchar(255),
         payload_type varchar(255) not null,
         time_stamp varchar(255) not null,
         aggregate_identifier varchar(255) not null,
-        sequence_number int8 not null,
+        sequence_number bigint not null,
         type varchar(255),
-        primary key (global_index)
+        primary key (global_index),
+        unique (aggregate_identifier, sequence_number)
     );
 
     create table saga_entry (
-       saga_id varchar(255) not null,
+        saga_id varchar(255) not null,
         revision varchar(255),
         saga_type varchar(255),
         serialized_saga oid,
@@ -32,10 +63,10 @@ create sequence hibernate_sequence start 1 increment 1;
     );
 
     create table snapshot_event_entry (
-       aggregate_identifier varchar(255) not null,
-        sequence_number int8 not null,
+        aggregate_identifier varchar(255) not null,
+        sequence_number bigint not null,
         type varchar(255) not null,
-        event_identifier varchar(255) not null,
+        event_identifier varchar(255) not null unique,
         meta_data oid,
         payload oid not null,
         payload_revision varchar(255),
@@ -45,8 +76,8 @@ create sequence hibernate_sequence start 1 increment 1;
     );
 
     create table token_entry (
-       processor_name varchar(255) not null,
-        segment int4 not null,
+        processor_name varchar(255) not null,
+        segment integer not null,
         owner varchar(255),
         timestamp varchar(255) not null,
         token oid,
@@ -55,14 +86,14 @@ create sequence hibernate_sequence start 1 increment 1;
     );
 
     create table user_unique_key (
-       identifier varchar(255) not null,
-        email varchar(255) not null,
-        external_user_id varchar(255) not null,
+        identifier varchar(255) not null,
+        email varchar(255) not null unique,
+        external_user_id varchar(255) not null unique,
         primary key (identifier)
     );
 
     create table users (
-       identifier varchar(255) not null,
+        identifier varchar(255) not null,
         email varchar(255) not null,
         external_user_id varchar(255) not null,
         firstname varchar(255) not null,
@@ -70,20 +101,15 @@ create sequence hibernate_sequence start 1 increment 1;
         telephone varchar(255) not null,
         primary key (identifier)
     );
-create index IDXk45eqnxkgd8hpdn6xixn8sgft on association_value_entry (saga_type, association_key, association_value);
-create index IDXgv5k1v2mh6frxuy5c0hgbau94 on association_value_entry (saga_id, saga_type);
 
-    alter table if exists domain_event_entry 
-       add constraint UK8s1f994p4la2ipb13me2xqm1w unique (aggregate_identifier, sequence_number);
+    create index IDXk45eqnxkgd8hpdn6xixn8sgft 
+       on association_value_entry (saga_type, association_key, association_value);
 
-    alter table if exists domain_event_entry 
-       add constraint UK_fwe6lsa8bfo6hyas6ud3m8c7x unique (event_identifier);
+    create index IDXgv5k1v2mh6frxuy5c0hgbau94 
+       on association_value_entry (saga_id, saga_type);
 
-    alter table if exists snapshot_event_entry 
-       add constraint UK_e1uucjseo68gopmnd0vgdl44h unique (event_identifier);
+    create index IDXe67wcx5fiq9hl4y4qkhlcj9cg 
+       on dead_letter_entry (processing_group);
 
-    alter table if exists user_unique_key 
-       add constraint UK_7rl1lg6v0c2b4os3hd99hy0un unique (email);
-
-    alter table if exists user_unique_key 
-       add constraint UK_hbn7ykwddd2spkc6buayh0lm1 unique (external_user_id);
+    create index IDXrwucpgs6sn93ldgoeh2q9k6bn 
+       on dead_letter_entry (processing_group, sequence_identifier);

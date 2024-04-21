@@ -17,33 +17,35 @@ class EmployeeController(
     val commandGateway: ReactorCommandGateway
 ) {
 
-  @MessageMapping("employees.create")
-  fun createEmployee(data: CreateEmployeeDto): Mono<EmployeeId> =
-      commandGateway.send(data.toCommand())
+    @MessageMapping("employees.create")
+    fun createEmployee(data: CreateEmployeeDto): Mono<EmployeeId> =
+        commandGateway.send(data.toCommand())
 
-  @MessageMapping("employees.{id}.permission.admin.grant")
-  fun grantAdminPermission(@DestinationVariable id: EmployeeId): Mono<Unit> =
-      commandGateway.send(GrantAdminPermissionToEmployee(id))
+    @MessageMapping("employees.{id}.permission.admin.grant")
+    fun grantAdminPermission(@DestinationVariable id: EmployeeId): Mono<Unit> =
+        commandGateway.send(GrantAdminPermissionToEmployee(id))
 
-  @MessageMapping("employees.{id}.permission.admin.remove")
-  fun removeAdminPermission(@DestinationVariable id: EmployeeId): Mono<Unit> =
-      commandGateway.send(RemoveAdminPermissionFromEmployee(id))
+    @MessageMapping("employees.{id}.permission.admin.remove")
+    fun removeAdminPermission(@DestinationVariable id: EmployeeId): Mono<Unit> =
+        commandGateway.send(RemoveAdminPermissionFromEmployee(id))
 
-  @MessageMapping("employees.{id}.permission.project-manager.grant")
-  fun grantProjectManagerPermission(@DestinationVariable id: EmployeeId): Mono<Unit> =
-      commandGateway.send(GrantProjectManagerPermissionToEmployee(id))
+    @MessageMapping("employees.{id}.permission.project-manager.grant")
+    fun grantProjectManagerPermission(@DestinationVariable id: EmployeeId): Mono<Unit> =
+        commandGateway.send(GrantProjectManagerPermissionToEmployee(id))
 
-  @MessageMapping("employees.{id}.permission.project-manager.remove")
-  fun removeProjectManagerPermission(@DestinationVariable id: EmployeeId): Mono<Unit> =
-      commandGateway.send(RemoveProjectManagerPermissionFromEmployee(id))
+    @MessageMapping("employees.{id}.permission.project-manager.remove")
+    fun removeProjectManagerPermission(@DestinationVariable id: EmployeeId): Mono<Unit> =
+        commandGateway.send(RemoveProjectManagerPermissionFromEmployee(id))
 
-  @MessageMapping("employees.{id}")
-  fun subscribeEmployeeByIdUpdates(@DestinationVariable id: EmployeeId): Flux<EmployeeQueryResult> =
-      queryGateway.queryUpdates(EmployeeQuery(id), EmployeeQueryResult::class.java)
+    @MessageMapping("employees.{id}")
+    fun subscribeEmployeeByIdUpdates(
+        @DestinationVariable id: EmployeeId
+    ): Flux<EmployeeQueryResult> =
+        queryGateway.queryUpdates(EmployeeQuery(id), EmployeeQueryResult::class.java)
 
-  @MessageMapping("companies.{id}.employees")
-  fun subscribeEmployeeByCompanyUpdates(
-      @DestinationVariable id: CompanyId
-  ): Flux<EmployeeQueryResult> =
-      queryGateway.queryUpdates(EmployeesByCompanyQuery(id), EmployeeQueryResult::class.java)
+    @MessageMapping("companies.{id}.employees")
+    fun subscribeEmployeeByCompanyUpdates(
+        @DestinationVariable id: CompanyId
+    ): Flux<EmployeeQueryResult> =
+        queryGateway.queryUpdates(EmployeesByCompanyQuery(id), EmployeeQueryResult::class.java)
 }

@@ -10,17 +10,17 @@ data class RegisteredUserPrincipal(
     val firstname: String,
     val lastname: String,
 ) : UserDetails {
-  override fun getAuthorities(): MutableCollection<out GrantedAuthority> = mutableSetOf()
+    override fun getAuthorities(): MutableCollection<out GrantedAuthority> = mutableSetOf()
 
-  override fun getPassword(): String? = null
+    override fun getPassword(): String? = null
 
-  override fun getUsername(): String = externalUserId
+    override fun getUsername(): String = externalUserId
 
-  override fun isAccountNonExpired(): Boolean = true
+    override fun isAccountNonExpired(): Boolean = true
 
-  override fun isAccountNonLocked(): Boolean = true
+    override fun isAccountNonLocked(): Boolean = true
 
-  override fun isCredentialsNonExpired(): Boolean = true
+    override fun isCredentialsNonExpired(): Boolean = true
 
-  override fun isEnabled(): Boolean = true
+    override fun isEnabled(): Boolean = true
 }

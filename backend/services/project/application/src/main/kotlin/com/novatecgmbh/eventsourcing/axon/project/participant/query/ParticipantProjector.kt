@@ -27,47 +27,57 @@ class ParticipantProjector(
     private val queryUpdateEmitter: QueryUpdateEmitter,
     private val queryGateway: QueryGateway
 ) {
-  @EventHandler
-  fun on(event: ParticipantCreatedEvent, @SequenceNumber aggregateVersion: Long) {
-    val user = queryGateway.queryOptional<UserQueryResult, UserQuery>(UserQuery(event.userId)).get()
-    val company =
-        queryGateway
-            .queryOptional<CompanyQueryResult, CompanyQuery>(CompanyQuery(event.companyId))
-            .get()
-    saveProjection(
-        ParticipantProjection(
-            identifier = event.aggregateIdentifier,
-            version = aggregateVersion,
-            projectId = event.projectId,
-            companyId = event.companyId,
-            companyName = company.map { it.name }.orElse(null),
-            userId = event.userId,
-            userFirstName = user.map { it.firstname }.orElse(null),
-            userLastName = user.map { it.lastname }.orElse(null),
-            userEmail = user.map { it.email }.orElse(null),
-            userTelephone = user.map { it.telephone }.orElse(null),
-        ))
-  }
+    @EventHandler
+    fun on(event: ParticipantCreatedEvent, @SequenceNumber aggregateVersion: Long) {
+        val user =
+            queryGateway.queryOptional<UserQueryResult, UserQuery>(UserQuery(event.userId)).get()
+        val company =
+            queryGateway
+                .queryOptional<CompanyQueryResult, CompanyQuery>(CompanyQuery(event.companyId))
+                .get()
+        saveProjection(
+            ParticipantProjection(
+                identifier = event.aggregateIdentifier,
+                version = aggregateVersion,
+                projectId = event.projectId,
+                companyId = event.companyId,
+                companyName = company.map { it.name }.orElse(null),
+                userId = event.userId,
+                userFirstName = user.map { it.firstname }.orElse(null),
+                userLastName = user.map { it.lastname }.orElse(null),
+                userEmail = user.map { it.email }.orElse(null),
+                userTelephone = user.map { it.telephone }.orElse(null),
+            )
+        )
+    }
 
-  private fun saveProjection(projection: ParticipantProjection) {
-    repository.save(projection).also { savedProjection -> updateQuerySubscribers(savedProjection) }
-  }
+    private fun saveProjection(projection: ParticipantProjection) {
+        repository.save(projection).also { savedProjection ->
+            updateQuerySubscribers(savedProjection)
+        }
+    }
 
-  private fun updateQuerySubscribers(participant: ParticipantProjection) {
-    queryUpdateEmitter.emit<ParticipantByProjectQuery, ParticipantQueryResult>(
-        participant.toQueryResult()) { query -> query.projectId == participant.projectId }
+    private fun updateQuerySubscribers(participant: ParticipantProjection) {
+        queryUpdateEmitter.emit<ParticipantByProjectQuery, ParticipantQueryResult>(
+            participant.toQueryResult()
+        ) { query ->
+            query.projectId == participant.projectId
+        }
 
-    queryUpdateEmitter.emit<ParticipantQuery, ParticipantQueryResult>(
-        participant.toQueryResult()) { query -> query.participantId == participant.identifier }
-  }
+        queryUpdateEmitter.emit<ParticipantQuery, ParticipantQueryResult>(
+            participant.toQueryResult()
+        ) { query ->
+            query.participantId == participant.identifier
+        }
+    }
 
-  @ResetHandler fun reset() = repository.deleteAll()
+    @ResetHandler fun reset() = repository.deleteAll()
 
-  @QueryHandler
-  fun handle(query: ParticipantQuery): Optional<ParticipantQueryResult> =
-      repository.findById(query.participantId).map { it.toQueryResult() }
+    @QueryHandler
+    fun handle(query: ParticipantQuery): Optional<ParticipantQueryResult> =
+        repository.findById(query.participantId).map { it.toQueryResult() }
 
-  @QueryHandler
-  fun handle(query: ParticipantByProjectQuery): Iterable<ParticipantQueryResult> =
-      repository.findAllByProjectId(query.projectId).map { it.toQueryResult() }
+    @QueryHandler
+    fun handle(query: ParticipantByProjectQuery): Iterable<ParticipantQueryResult> =
+        repository.findAllByProjectId(query.projectId).map { it.toQueryResult() }
 }

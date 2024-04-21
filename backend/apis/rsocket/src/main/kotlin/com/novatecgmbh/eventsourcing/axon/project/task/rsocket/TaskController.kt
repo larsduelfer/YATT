@@ -17,43 +17,43 @@ class TaskController(
     val commandGateway: ReactorCommandGateway
 ) {
 
-  @MessageMapping("tasks.create")
-  fun createTask(data: CreateTaskDto): Mono<TaskId> = commandGateway.send(data.toCommand())
+    @MessageMapping("tasks.create")
+    fun createTask(data: CreateTaskDto): Mono<TaskId> = commandGateway.send(data.toCommand())
 
-  @MessageMapping("tasks.rename")
-  fun renameTask(data: RenameTaskDto): Mono<Unit> = commandGateway.send(data.toCommand())
+    @MessageMapping("tasks.rename")
+    fun renameTask(data: RenameTaskDto): Mono<Unit> = commandGateway.send(data.toCommand())
 
-  @MessageMapping("tasks.reschedule")
-  fun rescheduleTask(data: RescheduleTaskDto): Mono<Unit> = commandGateway.send(data.toCommand())
+    @MessageMapping("tasks.reschedule")
+    fun rescheduleTask(data: RescheduleTaskDto): Mono<Unit> = commandGateway.send(data.toCommand())
 
-  @MessageMapping("tasks.{id}.start")
-  fun startTask(@DestinationVariable id: TaskId): Mono<Unit> =
-      commandGateway.send(StartTaskCommand(id))
+    @MessageMapping("tasks.{id}.start")
+    fun startTask(@DestinationVariable id: TaskId): Mono<Unit> =
+        commandGateway.send(StartTaskCommand(id))
 
-  @MessageMapping("tasks.{id}.complete")
-  fun completeTask(@DestinationVariable id: TaskId): Mono<Unit> =
-      commandGateway.send(CompleteTaskCommand(id))
+    @MessageMapping("tasks.{id}.complete")
+    fun completeTask(@DestinationVariable id: TaskId): Mono<Unit> =
+        commandGateway.send(CompleteTaskCommand(id))
 
-  @MessageMapping("tasks.todos.add")
-  fun addTodo(data: AddTodoDto): Mono<Unit> = commandGateway.send(data.toCommand())
+    @MessageMapping("tasks.todos.add")
+    fun addTodo(data: AddTodoDto): Mono<Unit> = commandGateway.send(data.toCommand())
 
-  @MessageMapping("tasks.todos.remove")
-  fun removeTodo(data: RemoveTodoDto): Mono<Unit> = commandGateway.send(data.toCommand())
+    @MessageMapping("tasks.todos.remove")
+    fun removeTodo(data: RemoveTodoDto): Mono<Unit> = commandGateway.send(data.toCommand())
 
-  @MessageMapping("tasks.todos.markDone")
-  fun markTodoAsDone(data: MarkTodoAsDoneDto): Mono<Unit> = commandGateway.send(data.toCommand())
+    @MessageMapping("tasks.todos.markDone")
+    fun markTodoAsDone(data: MarkTodoAsDoneDto): Mono<Unit> = commandGateway.send(data.toCommand())
 
-  @MessageMapping("tasks.{id}")
-  fun subscribeTaskByIdUpdates(@DestinationVariable id: TaskId): Flux<TaskQueryResult> =
-      queryGateway.queryUpdates(TaskQuery(id), TaskQueryResult::class.java)
+    @MessageMapping("tasks.{id}")
+    fun subscribeTaskByIdUpdates(@DestinationVariable id: TaskId): Flux<TaskQueryResult> =
+        queryGateway.queryUpdates(TaskQuery(id), TaskQueryResult::class.java)
 
-  @MessageMapping("projects.{id}.tasks")
-  fun subscribeTaskByProjectUpdates(@DestinationVariable id: ProjectId): Flux<TaskQueryResult> =
-      queryGateway.queryUpdates(TasksByProjectQuery(id), TaskQueryResult::class.java)
+    @MessageMapping("projects.{id}.tasks")
+    fun subscribeTaskByProjectUpdates(@DestinationVariable id: ProjectId): Flux<TaskQueryResult> =
+        queryGateway.queryUpdates(TasksByProjectQuery(id), TaskQueryResult::class.java)
 
-  @MessageMapping("tasks.assign")
-  fun assignTask(data: AssignTaskDto): Mono<Unit> = commandGateway.send(data.toCommand())
+    @MessageMapping("tasks.assign")
+    fun assignTask(data: AssignTaskDto): Mono<Unit> = commandGateway.send(data.toCommand())
 
-  @MessageMapping("tasks.unassign")
-  fun unassignTask(data: UnassignTaskDto): Mono<Unit> = commandGateway.send(data.toCommand())
+    @MessageMapping("tasks.unassign")
+    fun unassignTask(data: UnassignTaskDto): Mono<Unit> = commandGateway.send(data.toCommand())
 }

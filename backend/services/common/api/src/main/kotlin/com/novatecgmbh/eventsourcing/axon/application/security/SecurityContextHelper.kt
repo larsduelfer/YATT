@@ -5,20 +5,22 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder
 
 object SecurityContextHelper {
-  fun setAuthentication(userId: String) {
-    SecurityContextHolder.getContext().authentication =
-        UsernamePasswordAuthenticationToken(
-            RegisteredUserPrincipal(UserId(userId), "", "", ""), null)
-  }
+    fun setAuthentication(userId: String) {
+        SecurityContextHolder.getContext().authentication =
+            UsernamePasswordAuthenticationToken(
+                RegisteredUserPrincipal(UserId(userId), "", "", ""),
+                null
+            )
+    }
 
-  fun getUser(): UserId? {
-    val auth =
-        SecurityContextHolder.getContext().authentication
-            ?: throw RuntimeException("Authentication from security context holder is null!")
-    val principal = auth.principal
+    fun getUser(): UserId? {
+        val auth =
+            SecurityContextHolder.getContext().authentication
+                ?: throw RuntimeException("Authentication from security context holder is null!")
+        val principal = auth.principal
 
-    return if (principal is RegisteredUserPrincipal) {
-      principal.identifier
-    } else null
-  }
+        return if (principal is RegisteredUserPrincipal) {
+            principal.identifier
+        } else null
+    }
 }

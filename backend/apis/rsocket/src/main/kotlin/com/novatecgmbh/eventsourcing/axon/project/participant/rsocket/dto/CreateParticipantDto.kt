@@ -12,5 +12,5 @@ data class CreateParticipantDto(
     val companyId: CompanyId,
     val userId: UserId
 ) {
-  fun toCommand() = CreateParticipantCommand(identifier, projectId, companyId, userId)
+    fun toCommand() = CreateParticipantCommand(identifier, projectId, companyId, userId)
 }

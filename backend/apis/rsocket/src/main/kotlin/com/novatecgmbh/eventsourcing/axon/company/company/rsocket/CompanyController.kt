@@ -19,14 +19,15 @@ class CompanyController(
     val commandGateway: ReactorCommandGateway
 ) {
 
-  @MessageMapping("companies.create")
-  fun createCompany(data: CreateCompanyDto): Mono<CompanyId> = commandGateway.send(data.toCommand())
+    @MessageMapping("companies.create")
+    fun createCompany(data: CreateCompanyDto): Mono<CompanyId> =
+        commandGateway.send(data.toCommand())
 
-  @MessageMapping("companies")
-  fun subscribeAllCompaniesUpdates(): Flux<CompanyQueryResult> =
-      queryGateway.queryUpdates(AllCompaniesQuery(), CompanyQueryResult::class.java)
+    @MessageMapping("companies")
+    fun subscribeAllCompaniesUpdates(): Flux<CompanyQueryResult> =
+        queryGateway.queryUpdates(AllCompaniesQuery(), CompanyQueryResult::class.java)
 
-  @MessageMapping("companies.{id}")
-  fun subscribeCompanyByIdUpdates(@DestinationVariable id: CompanyId): Flux<CompanyQueryResult> =
-      queryGateway.queryUpdates(CompanyQuery(id), CompanyQueryResult::class.java)
+    @MessageMapping("companies.{id}")
+    fun subscribeCompanyByIdUpdates(@DestinationVariable id: CompanyId): Flux<CompanyQueryResult> =
+        queryGateway.queryUpdates(CompanyQuery(id), CompanyQueryResult::class.java)
 }

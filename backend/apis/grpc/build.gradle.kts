@@ -12,7 +12,7 @@ dependencies {
   api(project(":apis:grpc-lib"))
 
   implementation("io.projectreactor:reactor-core")
-  implementation("jakarta.annotation:jakarta.annotation-api:1.3.5")
+  implementation("jakarta.annotation:jakarta.annotation-api:2.0.0")
 
   implementation("net.devh:grpc-spring-boot-starter:2.13.1.RELEASE")
   implementation("org.axonframework:axon-spring-boot-starter")

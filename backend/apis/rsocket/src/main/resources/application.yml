@@ -32,3 +32,8 @@ logging:
     org:
       springframework.boot: info
       springframework.web.socket: debug
+
+axon:
+  extension:
+    tracing:
+      enabled: false

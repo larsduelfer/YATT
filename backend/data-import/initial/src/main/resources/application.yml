@@ -10,3 +10,8 @@ logging:
     ROOT: warn
     org:
       springframework.boot: info
+
+axon:
+  extension:
+    tracing:
+      enabled: false

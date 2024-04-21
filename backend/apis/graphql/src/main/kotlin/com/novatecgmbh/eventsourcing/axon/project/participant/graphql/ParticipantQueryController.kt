@@ -21,29 +21,32 @@ import reactor.kotlin.core.publisher.toMono
 @Controller
 class ParticipantQueryController(val queryGateway: QueryGateway) {
 
-  @QueryMapping
-  fun participant(@Argument identifier: ParticipantId): CompletableFuture<ParticipantQueryResult> =
-      queryGateway.query(ParticipantQuery(identifier))
+    @QueryMapping
+    fun participant(
+        @Argument identifier: ParticipantId
+    ): CompletableFuture<ParticipantQueryResult> = queryGateway.query(ParticipantQuery(identifier))
 
-  @BatchMapping(typeName = "Project")
-  fun participants(
-      projects: List<ProjectQueryResult>
-  ): Mono<Map<ProjectQueryResult, List<ParticipantQueryResult>>> =
-      queryGateway
-          .queryMany<ParticipantQueryResult, ParticipantByMultipleProjectsQuery>(
-              ParticipantByMultipleProjectsQuery(
-                  projects.map((ProjectQueryResult::identifier)).toSet()))
-          .thenApply {
-            it.groupBy { participant ->
-              projects.first { project -> project.identifier == participant.projectId }
+    @BatchMapping(typeName = "Project")
+    fun participants(
+        projects: List<ProjectQueryResult>
+    ): Mono<Map<ProjectQueryResult, List<ParticipantQueryResult>>> =
+        queryGateway
+            .queryMany<ParticipantQueryResult, ParticipantByMultipleProjectsQuery>(
+                ParticipantByMultipleProjectsQuery(
+                    projects.map((ProjectQueryResult::identifier)).toSet()
+                )
+            )
+            .thenApply {
+                it.groupBy { participant ->
+                    projects.first { project -> project.identifier == participant.projectId }
+                }
             }
-          }
-          .toMono()
+            .toMono()
 
-  // TODO: Change to batch mapping
-  @SchemaMapping(typeName = "Task")
-  fun participant(task: TaskQueryResult): CompletableFuture<ParticipantQueryResult?> =
-      if (task.participantId != null) {
-        queryGateway.query(ParticipantQuery(task.participantId!!))
-      } else CompletableFuture.completedFuture(null)
+    // TODO: Change to batch mapping
+    @SchemaMapping(typeName = "Task")
+    fun participant(task: TaskQueryResult): CompletableFuture<ParticipantQueryResult?> =
+        if (task.participantId != null) {
+            queryGateway.query(ParticipantQuery(task.participantId!!))
+        } else CompletableFuture.completedFuture(null)
 }

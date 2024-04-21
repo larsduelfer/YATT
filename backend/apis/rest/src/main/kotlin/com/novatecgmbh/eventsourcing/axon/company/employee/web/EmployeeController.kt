@@ -20,91 +20,98 @@ class EmployeeController(
     private val commandGateway: CommandGateway,
     private val queryGateway: QueryGateway,
 ) {
-  @PostMapping("/v2/employees")
-  fun createEmployee(@RequestBody body: CreateEmployeeDto): CompletableFuture<String> =
-      createEmployeeWithId(EmployeeId(), body)
+    @PostMapping("/v2/employees")
+    fun createEmployee(@RequestBody body: CreateEmployeeDto): CompletableFuture<String> =
+        createEmployeeWithId(EmployeeId(), body)
 
-  @PostMapping("/v2/employees/{employeeId}")
-  fun createEmployeeWithId(
-      @PathVariable("employeeId") employeeId: EmployeeId,
-      @RequestBody body: CreateEmployeeDto,
-  ): CompletableFuture<String> = commandGateway.send(body.toCommand(employeeId))
+    @PostMapping("/v2/employees/{employeeId}")
+    fun createEmployeeWithId(
+        @PathVariable("employeeId") employeeId: EmployeeId,
+        @RequestBody body: CreateEmployeeDto,
+    ): CompletableFuture<String> = commandGateway.send(body.toCommand(employeeId))
 
-  @GetMapping("/v2/employees")
-  fun getAllEmployees(): CompletableFuture<List<EmployeeQueryResult>> =
-      queryGateway.queryMany(AllEmployeesQuery())
+    @GetMapping("/v2/employees")
+    fun getAllEmployees(): CompletableFuture<List<EmployeeQueryResult>> =
+        queryGateway.queryMany(AllEmployeesQuery())
 
-  @GetMapping("/v2/employees/{employeeId}")
-  fun getEmployeeById(
-      @PathVariable("employeeId") employeeId: EmployeeId
-  ): ResponseEntity<EmployeeQueryResult> =
-      queryGateway
-          .queryOptional<EmployeeQueryResult, EmployeeQuery>(EmployeeQuery(employeeId))
-          .get()
-          .map { ResponseEntity(it, HttpStatus.OK) }
-          .orElse(ResponseEntity(HttpStatus.NOT_FOUND))
+    @GetMapping("/v2/employees/{employeeId}")
+    fun getEmployeeById(
+        @PathVariable("employeeId") employeeId: EmployeeId
+    ): ResponseEntity<EmployeeQueryResult> =
+        queryGateway
+            .queryOptional<EmployeeQueryResult, EmployeeQuery>(EmployeeQuery(employeeId))
+            .get()
+            .map { ResponseEntity(it, HttpStatus.OK) }
+            .orElse(ResponseEntity(HttpStatus.NOT_FOUND))
 
-  @GetMapping("/v2/employees/{employeeId}", produces = [MediaType.APPLICATION_NDJSON_VALUE])
-  fun getEmployeeByIdAndUpdates(
-      @PathVariable("employeeId") employeeId: EmployeeId
-  ): Flux<EmployeeQueryResult> {
-    val query =
-        queryGateway.subscriptionQuery(
-            EmployeeQuery(employeeId),
-            ResponseTypes.instanceOf(EmployeeQueryResult::class.java),
-            ResponseTypes.instanceOf(EmployeeQueryResult::class.java))
+    @GetMapping("/v2/employees/{employeeId}", produces = [MediaType.APPLICATION_NDJSON_VALUE])
+    fun getEmployeeByIdAndUpdates(
+        @PathVariable("employeeId") employeeId: EmployeeId
+    ): Flux<EmployeeQueryResult> {
+        val query =
+            queryGateway.subscriptionQuery(
+                EmployeeQuery(employeeId),
+                ResponseTypes.instanceOf(EmployeeQueryResult::class.java),
+                ResponseTypes.instanceOf(EmployeeQueryResult::class.java)
+            )
 
-    return query.initialResult().concatWith(query.updates()).doFinally { query.cancel() }
-  }
+        return query.initialResult().concatWith(query.updates()).doFinally { query.cancel() }
+    }
 
-  @GetMapping("/v2/companies/{companyId}/employees")
-  fun getEmployeesByCompany(
-      @PathVariable("companyId") companyId: CompanyId
-  ): ResponseEntity<List<EmployeeQueryResult>> =
-      ResponseEntity(
-          queryGateway
-              .queryMany<EmployeeQueryResult, EmployeesByCompanyQuery>(
-                  EmployeesByCompanyQuery(companyId))
-              .get(),
-          HttpStatus.OK)
+    @GetMapping("/v2/companies/{companyId}/employees")
+    fun getEmployeesByCompany(
+        @PathVariable("companyId") companyId: CompanyId
+    ): ResponseEntity<List<EmployeeQueryResult>> =
+        ResponseEntity(
+            queryGateway
+                .queryMany<EmployeeQueryResult, EmployeesByCompanyQuery>(
+                    EmployeesByCompanyQuery(companyId)
+                )
+                .get(),
+            HttpStatus.OK
+        )
 
-  @GetMapping(
-      "/v2/companies/{companyId}/employees", produces = [MediaType.APPLICATION_NDJSON_VALUE])
-  fun getEmployeesByCompanyAndUpdates(
-      @PathVariable("companyId") companyId: CompanyId
-  ): Flux<EmployeeQueryResult> {
-    val query =
-        queryGateway.subscriptionQuery(
-            EmployeesByCompanyQuery(companyId),
-            ResponseTypes.multipleInstancesOf(EmployeeQueryResult::class.java),
-            ResponseTypes.instanceOf(EmployeeQueryResult::class.java))
+    @GetMapping(
+        "/v2/companies/{companyId}/employees",
+        produces = [MediaType.APPLICATION_NDJSON_VALUE]
+    )
+    fun getEmployeesByCompanyAndUpdates(
+        @PathVariable("companyId") companyId: CompanyId
+    ): Flux<EmployeeQueryResult> {
+        val query =
+            queryGateway.subscriptionQuery(
+                EmployeesByCompanyQuery(companyId),
+                ResponseTypes.multipleInstancesOf(EmployeeQueryResult::class.java),
+                ResponseTypes.instanceOf(EmployeeQueryResult::class.java)
+            )
 
-    return query
-        .initialResult()
-        .flatMapMany { Flux.fromIterable(it) }
-        .concatWith(query.updates())
-        .doFinally { query.cancel() }
-  }
+        return query
+            .initialResult()
+            .flatMapMany { Flux.fromIterable(it) }
+            .concatWith(query.updates())
+            .doFinally { query.cancel() }
+    }
 
-  @PostMapping("/v2/employees/{employeeId}/permission/admin/grant")
-  fun grantAdminPermission(
-      @PathVariable("employeeId") employeeId: EmployeeId
-  ): CompletableFuture<String> = commandGateway.send(GrantAdminPermissionToEmployee(employeeId))
+    @PostMapping("/v2/employees/{employeeId}/permission/admin/grant")
+    fun grantAdminPermission(
+        @PathVariable("employeeId") employeeId: EmployeeId
+    ): CompletableFuture<String> = commandGateway.send(GrantAdminPermissionToEmployee(employeeId))
 
-  @PostMapping("/v2/employees/{employeeId}/permission/admin/remove")
-  fun removeAdminPermission(
-      @PathVariable("employeeId") employeeId: EmployeeId
-  ): CompletableFuture<String> = commandGateway.send(RemoveAdminPermissionFromEmployee(employeeId))
+    @PostMapping("/v2/employees/{employeeId}/permission/admin/remove")
+    fun removeAdminPermission(
+        @PathVariable("employeeId") employeeId: EmployeeId
+    ): CompletableFuture<String> =
+        commandGateway.send(RemoveAdminPermissionFromEmployee(employeeId))
 
-  @PostMapping("/v2/employees/{employeeId}/permission/projectmanager/grant")
-  fun grantProjectManagerPermission(
-      @PathVariable("employeeId") employeeId: EmployeeId
-  ): CompletableFuture<String> =
-      commandGateway.send(GrantProjectManagerPermissionToEmployee(employeeId))
+    @PostMapping("/v2/employees/{employeeId}/permission/projectmanager/grant")
+    fun grantProjectManagerPermission(
+        @PathVariable("employeeId") employeeId: EmployeeId
+    ): CompletableFuture<String> =
+        commandGateway.send(GrantProjectManagerPermissionToEmployee(employeeId))
 
-  @PostMapping("/v2/employees/{employeeId}/permission/projectmanager/remove")
-  fun removeProjectManagerPermission(
-      @PathVariable("employeeId") employeeId: EmployeeId
-  ): CompletableFuture<String> =
-      commandGateway.send(RemoveProjectManagerPermissionFromEmployee(employeeId))
+    @PostMapping("/v2/employees/{employeeId}/permission/projectmanager/remove")
+    fun removeProjectManagerPermission(
+        @PathVariable("employeeId") employeeId: EmployeeId
+    ): CompletableFuture<String> =
+        commandGateway.send(RemoveProjectManagerPermissionFromEmployee(employeeId))
 }

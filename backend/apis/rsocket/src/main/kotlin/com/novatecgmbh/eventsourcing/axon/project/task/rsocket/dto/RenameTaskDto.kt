@@ -4,5 +4,5 @@ import com.novatecgmbh.eventsourcing.axon.project.task.api.RenameTaskCommand
 import com.novatecgmbh.eventsourcing.axon.project.task.api.TaskId
 
 data class RenameTaskDto(val identifier: TaskId, val name: String) {
-  fun toCommand() = RenameTaskCommand(identifier = identifier, name = name)
+    fun toCommand() = RenameTaskCommand(identifier = identifier, name = name)
 }

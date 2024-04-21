@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface UserProjectionRepository : JpaRepository<UserProjection, UserId> {
-  fun findByExternalUserId(externalUserId: String): Optional<UserProjection>
+    fun findByExternalUserId(externalUserId: String): Optional<UserProjection>
 }

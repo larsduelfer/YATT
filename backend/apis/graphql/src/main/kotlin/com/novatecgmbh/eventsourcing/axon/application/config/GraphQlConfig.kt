@@ -25,52 +25,55 @@ class GraphQlConfiguration(
     @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri}") val issuer: String
 ) {
 
-  @Bean
-  fun runtimeWiringConfigurer() = RuntimeWiringConfigurer { builder ->
-    builder.scalar(dateScalar())
-  }
+    @Bean
+    fun runtimeWiringConfigurer() = RuntimeWiringConfigurer { builder ->
+        builder.scalar(dateScalar())
+    }
 
-  fun dateScalar(): GraphQLScalarType =
-      GraphQLScalarType.newScalar()
-          .name("Date")
-          .description("Java 8 LocalDate as scalar.")
-          .coercing(
-              object : Coercing<LocalDate, String> {
-                override fun serialize(dataFetcherResult: Any): String {
-                  return (dataFetcherResult as? LocalDate)?.toString()
-                      ?: throw CoercingSerializeException("Expected a LocalDate object.")
-                }
-
-                override fun parseValue(input: Any): LocalDate {
-                  return try {
-                    if (input is String) {
-                      LocalDate.parse(input)
-                    } else {
-                      throw CoercingParseValueException("Expected a String")
+    fun dateScalar(): GraphQLScalarType =
+        GraphQLScalarType.newScalar()
+            .name("Date")
+            .description("Java 8 LocalDate as scalar.")
+            .coercing(
+                object : Coercing<LocalDate, String> {
+                    override fun serialize(dataFetcherResult: Any): String {
+                        return (dataFetcherResult as? LocalDate)?.toString()
+                            ?: throw CoercingSerializeException("Expected a LocalDate object.")
                     }
-                  } catch (e: DateTimeParseException) {
-                    throw CoercingParseValueException(
-                        String.format("Not a valid date: '%s'.", input), e)
-                  }
-                }
 
-                override fun parseLiteral(input: Any): LocalDate {
-                  return if (input is StringValue) {
-                    try {
-                      LocalDate.parse(input.value)
-                    } catch (e: DateTimeParseException) {
-                      throw CoercingParseLiteralException(e)
+                    override fun parseValue(input: Any): LocalDate {
+                        return try {
+                            if (input is String) {
+                                LocalDate.parse(input)
+                            } else {
+                                throw CoercingParseValueException("Expected a String")
+                            }
+                        } catch (e: DateTimeParseException) {
+                            throw CoercingParseValueException(
+                                String.format("Not a valid date: '%s'.", input),
+                                e
+                            )
+                        }
                     }
-                  } else {
-                    throw CoercingParseLiteralException("Expected a StringValue.")
-                  }
-                }
-              })
-          .build()
 
-  @Bean
-  fun interceptor(userDetailsService: CustomUserDetailsService) =
-      CustomWebSocketGraphQlHandlerInterceptor(userDetailsService, issuer)
+                    override fun parseLiteral(input: Any): LocalDate {
+                        return if (input is StringValue) {
+                            try {
+                                LocalDate.parse(input.value)
+                            } catch (e: DateTimeParseException) {
+                                throw CoercingParseLiteralException(e)
+                            }
+                        } else {
+                            throw CoercingParseLiteralException("Expected a StringValue.")
+                        }
+                    }
+                }
+            )
+            .build()
+
+    @Bean
+    fun interceptor(userDetailsService: CustomUserDetailsService) =
+        CustomWebSocketGraphQlHandlerInterceptor(userDetailsService, issuer)
 }
 
 /**
@@ -82,18 +85,18 @@ class CustomWebSocketGraphQlHandlerInterceptor(
     private val issuer: String
 ) : WebSocketGraphQlInterceptor {
 
-  override fun intercept(
-      request: WebGraphQlRequest,
-      chain: WebGraphQlInterceptor.Chain
-  ): Mono<WebGraphQlResponse> {
-    request.headers.getFirst(HttpHeaders.AUTHORIZATION)?.let { accessToken ->
-      val authConverter = CustomUserAuthenticationConverter(userDetailsService)
-      val jwt =
-          JwtDecoders.fromIssuerLocation<JwtDecoder>(issuer)
-              .decode(accessToken.replace("Bearer ", ""))
-      val user = authConverter.convert(jwt)
-      SecurityContextHolder.getContext().authentication = user
+    override fun intercept(
+        request: WebGraphQlRequest,
+        chain: WebGraphQlInterceptor.Chain
+    ): Mono<WebGraphQlResponse> {
+        request.headers.getFirst(HttpHeaders.AUTHORIZATION)?.let { accessToken ->
+            val authConverter = CustomUserAuthenticationConverter(userDetailsService)
+            val jwt =
+                JwtDecoders.fromIssuerLocation<JwtDecoder>(issuer)
+                    .decode(accessToken.replace("Bearer ", ""))
+            val user = authConverter.convert(jwt)
+            SecurityContextHolder.getContext().authentication = user
+        }
+        return super.intercept(request, chain)
     }
-    return super.intercept(request, chain)
-  }
 }

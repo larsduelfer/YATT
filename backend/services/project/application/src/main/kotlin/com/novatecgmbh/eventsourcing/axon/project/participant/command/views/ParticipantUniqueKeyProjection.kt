@@ -4,7 +4,7 @@ import com.novatecgmbh.eventsourcing.axon.company.company.api.CompanyId
 import com.novatecgmbh.eventsourcing.axon.project.participant.api.ParticipantId
 import com.novatecgmbh.eventsourcing.axon.project.project.api.ProjectId
 import com.novatecgmbh.eventsourcing.axon.user.api.UserId
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 @Table(
@@ -13,7 +13,10 @@ import javax.persistence.*
         [
             UniqueConstraint(
                 name = "participant_unique_key_constraint",
-                columnNames = ["projectId", "companyId", "userId"])])
+                columnNames = ["projectId", "companyId", "userId"]
+            )
+        ]
+)
 class ParticipantUniqueKeyProjection(
     @EmbeddedId var identifier: ParticipantId,
     @Embedded

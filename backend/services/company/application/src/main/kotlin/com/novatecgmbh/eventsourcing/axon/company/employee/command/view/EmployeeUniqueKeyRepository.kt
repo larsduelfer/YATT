@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface EmployeeUniqueKeyRepository : JpaRepository<EmployeeUniqueKeyProjection, EmployeeId> {
-  fun existsByCompanyIdAndUserId(companyId: CompanyId, userId: UserId): Boolean
+    fun existsByCompanyIdAndUserId(companyId: CompanyId, userId: UserId): Boolean
 }

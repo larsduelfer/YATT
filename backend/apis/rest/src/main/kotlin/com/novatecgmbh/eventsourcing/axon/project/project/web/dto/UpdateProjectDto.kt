@@ -10,6 +10,6 @@ data class UpdateProjectDto(
     val startDate: LocalDate,
     val deadline: LocalDate
 ) {
-  fun toCommand(projectId: ProjectId) =
-      UpdateProjectCommand(projectId, version, name, startDate, deadline)
+    fun toCommand(projectId: ProjectId) =
+        UpdateProjectCommand(projectId, version, name, startDate, deadline)
 }

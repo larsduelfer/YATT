@@ -17,25 +17,26 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class AxonBeansEnhancementsConfiguration {
 
-  @Autowired
-  fun commandBus(commandBus: CommandBus) {
-    commandBus.run { registerDispatchInterceptor(UserInjectingCommandMessageInterceptor()) }
-  }
+    @Autowired
+    fun commandBus(commandBus: CommandBus) {
+        commandBus.run { registerDispatchInterceptor(UserInjectingCommandMessageInterceptor()) }
+    }
 
-  @Autowired
-  fun queryBus(queryBus: QueryBus) {
-    queryBus.run { registerDispatchInterceptor(UserInjectingQueryMessageInterceptor()) }
-  }
+    @Autowired
+    fun queryBus(queryBus: QueryBus) {
+        queryBus.run { registerDispatchInterceptor(UserInjectingQueryMessageInterceptor()) }
+    }
 }
 
 @Configuration
 class AxonAdditionalBeansConfiguration {
 
-  @Bean
-  fun correlationDataProviders(): CorrelationDataProvider =
-      MultiCorrelationDataProvider<CommandMessage<*>>(
-          listOf(
-              SimpleCorrelationDataProvider(*AUDIT_KEYS),
-              MessageOriginProvider(),
-          ))
+    @Bean
+    fun correlationDataProviders(): CorrelationDataProvider =
+        MultiCorrelationDataProvider<CommandMessage<*>>(
+            listOf(
+                SimpleCorrelationDataProvider(*AUDIT_KEYS),
+                MessageOriginProvider(),
+            )
+        )
 }

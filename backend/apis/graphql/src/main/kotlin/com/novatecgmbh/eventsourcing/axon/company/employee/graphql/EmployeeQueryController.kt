@@ -19,23 +19,26 @@ import reactor.kotlin.core.publisher.toMono
 @Controller
 class EmployeeQueryController(val queryGateway: QueryGateway) {
 
-  @QueryMapping
-  fun employee(@Argument identifier: EmployeeId): CompletableFuture<EmployeeQueryResult?> =
-      queryGateway.queryOptional<EmployeeQueryResult, EmployeeQuery>(EmployeeQuery(identifier))
-          .thenApply { optional -> optional.orElse(null) }
+    @QueryMapping
+    fun employee(@Argument identifier: EmployeeId): CompletableFuture<EmployeeQueryResult?> =
+        queryGateway
+            .queryOptional<EmployeeQueryResult, EmployeeQuery>(EmployeeQuery(identifier))
+            .thenApply { optional -> optional.orElse(null) }
 
-  @BatchMapping(typeName = "Company")
-  fun employees(
-      companies: Set<CompanyQueryResult>
-  ): Mono<Map<CompanyQueryResult, List<EmployeeQueryResult>>> =
-      queryGateway
-          .queryMany<EmployeeQueryResult, EmployeesByMultipleCompaniesQuery>(
-              EmployeesByMultipleCompaniesQuery(
-                  companies.map(CompanyQueryResult::identifier).toSet()))
-          .thenApply {
-            it.groupBy { employee ->
-              companies.first { company -> company.identifier == employee.companyId }
+    @BatchMapping(typeName = "Company")
+    fun employees(
+        companies: Set<CompanyQueryResult>
+    ): Mono<Map<CompanyQueryResult, List<EmployeeQueryResult>>> =
+        queryGateway
+            .queryMany<EmployeeQueryResult, EmployeesByMultipleCompaniesQuery>(
+                EmployeesByMultipleCompaniesQuery(
+                    companies.map(CompanyQueryResult::identifier).toSet()
+                )
+            )
+            .thenApply {
+                it.groupBy { employee ->
+                    companies.first { company -> company.identifier == employee.companyId }
+                }
             }
-          }
-          .toMono()
+            .toMono()
 }

@@ -25,84 +25,90 @@ class ProjectProjector(
     private val queryUpdateEmitter: QueryUpdateEmitter,
     private val queryGateway: QueryGateway
 ) {
-  @EventHandler
-  fun on(event: ProjectCreatedEvent, @SequenceNumber aggregateVersion: Long) {
-    val company =
-        queryGateway
-            .queryOptional<CompanyQueryResult, CompanyQuery>(CompanyQuery(event.companyId))
-            .get()
-    saveProjection(
-        ProjectProjection(
-            identifier = event.aggregateIdentifier,
-            version = aggregateVersion,
-            name = event.projectName,
-            plannedStartDate = event.plannedStartDate,
-            deadline = event.deadline,
-            companyReference =
-                company
-                    .map { it.toAggregateReference() }
-                    .orElse(AggregateReference(event.companyId)),
-            status = event.status))
-  }
-
-  @EventHandler
-  fun on(event: ActualEndDateChangedEvent, @SequenceNumber aggregateVersion: Long) =
-      updateProjection(event.aggregateIdentifier) {
-        it.actualEndDate = event.actualEndDate
-        it.version = aggregateVersion
-      }
-
-  @EventHandler
-  fun on(event: ProjectDelayedEvent, @SequenceNumber aggregateVersion: Long) =
-      updateProjection(event.aggregateIdentifier) {
-        it.status = DELAYED
-        it.version = aggregateVersion
-      }
-
-  @EventHandler
-  fun on(event: ProjectOnTimeEvent, @SequenceNumber aggregateVersion: Long) =
-      updateProjection(event.aggregateIdentifier) {
-        it.status = ON_TIME
-        it.version = aggregateVersion
-      }
-
-  @EventHandler
-  fun on(event: ProjectRenamedEvent, @SequenceNumber aggregateVersion: Long) =
-      updateProjection(event.aggregateIdentifier) {
-        it.name = event.newName
-        it.version = aggregateVersion
-      }
-
-  @EventHandler
-  fun on(event: ProjectRescheduledEvent, @SequenceNumber aggregateVersion: Long) =
-      updateProjection(event.aggregateIdentifier) {
-        it.plannedStartDate = event.newStartDate
-        it.deadline = event.newDeadline
-        it.version = aggregateVersion
-      }
-
-  private fun updateProjection(identifier: ProjectId, stateChanges: (ProjectProjection) -> Unit) {
-    repository.findById(identifier).get().also {
-      stateChanges.invoke(it)
-      saveProjection(it)
-    }
-  }
-
-  private fun saveProjection(projection: ProjectProjection) {
-    repository.save(projection).also { savedProjection -> updateQuerySubscribers(savedProjection) }
-  }
-
-  private fun updateQuerySubscribers(project: ProjectProjection) {
-    queryUpdateEmitter.emit<ProjectQuery, ProjectQueryResult>(project.toQueryResult()) { query ->
-      query.projectId == project.identifier
+    @EventHandler
+    fun on(event: ProjectCreatedEvent, @SequenceNumber aggregateVersion: Long) {
+        val company =
+            queryGateway
+                .queryOptional<CompanyQueryResult, CompanyQuery>(CompanyQuery(event.companyId))
+                .get()
+        saveProjection(
+            ProjectProjection(
+                identifier = event.aggregateIdentifier,
+                version = aggregateVersion,
+                name = event.projectName,
+                plannedStartDate = event.plannedStartDate,
+                deadline = event.deadline,
+                companyReference =
+                    company
+                        .map { it.toAggregateReference() }
+                        .orElse(AggregateReference(event.companyId)),
+                status = event.status
+            )
+        )
     }
 
-    queryUpdateEmitter.emit<MyProjectsQuery, ProjectQueryResult>(project.toQueryResult()) { query ->
-      aclRepository
-          .findAllUserWithAccessToProject(project.identifier.identifier)
-          .contains(query.userId)
-    }
-  }
+    @EventHandler
+    fun on(event: ActualEndDateChangedEvent, @SequenceNumber aggregateVersion: Long) =
+        updateProjection(event.aggregateIdentifier) {
+            it.actualEndDate = event.actualEndDate
+            it.version = aggregateVersion
+        }
 
-  @ResetHandler fun reset() = repository.deleteAll()
+    @EventHandler
+    fun on(event: ProjectDelayedEvent, @SequenceNumber aggregateVersion: Long) =
+        updateProjection(event.aggregateIdentifier) {
+            it.status = DELAYED
+            it.version = aggregateVersion
+        }
+
+    @EventHandler
+    fun on(event: ProjectOnTimeEvent, @SequenceNumber aggregateVersion: Long) =
+        updateProjection(event.aggregateIdentifier) {
+            it.status = ON_TIME
+            it.version = aggregateVersion
+        }
+
+    @EventHandler
+    fun on(event: ProjectRenamedEvent, @SequenceNumber aggregateVersion: Long) =
+        updateProjection(event.aggregateIdentifier) {
+            it.name = event.newName
+            it.version = aggregateVersion
+        }
+
+    @EventHandler
+    fun on(event: ProjectRescheduledEvent, @SequenceNumber aggregateVersion: Long) =
+        updateProjection(event.aggregateIdentifier) {
+            it.plannedStartDate = event.newStartDate
+            it.deadline = event.newDeadline
+            it.version = aggregateVersion
+        }
+
+    private fun updateProjection(identifier: ProjectId, stateChanges: (ProjectProjection) -> Unit) {
+        repository.findById(identifier).get().also {
+            stateChanges.invoke(it)
+            saveProjection(it)
+        }
+    }
+
+    private fun saveProjection(projection: ProjectProjection) {
+        repository.save(projection).also { savedProjection ->
+            updateQuerySubscribers(savedProjection)
+        }
+    }
+
+    private fun updateQuerySubscribers(project: ProjectProjection) {
+        queryUpdateEmitter.emit<ProjectQuery, ProjectQueryResult>(project.toQueryResult()) { query
+            ->
+            query.projectId == project.identifier
+        }
+
+        queryUpdateEmitter.emit<MyProjectsQuery, ProjectQueryResult>(project.toQueryResult()) {
+            query ->
+            aclRepository
+                .findAllUserWithAccessToProject(project.identifier.identifier)
+                .contains(query.userId)
+        }
+    }
+
+    @ResetHandler fun reset() = repository.deleteAll()
 }

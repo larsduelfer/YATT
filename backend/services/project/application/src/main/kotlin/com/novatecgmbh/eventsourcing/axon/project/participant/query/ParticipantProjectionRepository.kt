@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ParticipantProjectionRepository : JpaRepository<ParticipantProjection, ParticipantId> {
-  fun findAllByProjectId(projectId: ProjectId): List<ParticipantProjection>
-  fun findAllByProjectIdIn(projectId: Set<ProjectId>): List<ParticipantProjection>
+    fun findAllByProjectId(projectId: ProjectId): List<ParticipantProjection>
+
+    fun findAllByProjectIdIn(projectId: Set<ProjectId>): List<ParticipantProjection>
 }

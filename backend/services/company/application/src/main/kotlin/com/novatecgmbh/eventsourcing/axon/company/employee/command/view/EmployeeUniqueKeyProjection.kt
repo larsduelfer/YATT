@@ -3,12 +3,13 @@ package com.novatecgmbh.eventsourcing.axon.company.employee.command.view
 import com.novatecgmbh.eventsourcing.axon.company.company.api.CompanyId
 import com.novatecgmbh.eventsourcing.axon.company.employee.api.EmployeeId
 import com.novatecgmbh.eventsourcing.axon.user.api.UserId
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 @Table(
     name = "employee_unique_key",
-    uniqueConstraints = [UniqueConstraint(columnNames = ["companyId", "userId"])])
+    uniqueConstraints = [UniqueConstraint(columnNames = ["companyId", "userId"])]
+)
 class EmployeeUniqueKeyProjection(
     @EmbeddedId var identifier: EmployeeId,
     @Embedded

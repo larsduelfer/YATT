@@ -10,5 +10,5 @@ data class CreateEmployeeDto(
     val companyId: CompanyId,
     val userId: UserId
 ) {
-  fun toCommand() = CreateEmployeeCommand(identifier, companyId, userId)
+    fun toCommand() = CreateEmployeeCommand(identifier, companyId, userId)
 }

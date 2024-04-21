@@ -14,26 +14,30 @@ import org.axonframework.spring.stereotype.Aggregate
 
 @Aggregate
 class Company : BaseAggregate() {
-  @AggregateIdentifier private lateinit var aggregateIdentifier: CompanyId
-  private lateinit var name: String
+    @AggregateIdentifier private lateinit var aggregateIdentifier: CompanyId
+    private lateinit var name: String
 
-  @CommandHandler
-  @CreationPolicy(AggregateCreationPolicy.CREATE_IF_MISSING)
-  fun handle(command: CreateCompanyCommand): CompanyId {
-    if (::aggregateIdentifier.isInitialized) {
-      throw AlreadyExistsException()
+    @CommandHandler
+    @CreationPolicy(AggregateCreationPolicy.CREATE_IF_MISSING)
+    fun handle(command: CreateCompanyCommand): CompanyId {
+        if (::aggregateIdentifier.isInitialized) {
+            throw AlreadyExistsException()
+        }
+        apply(
+            CompanyCreatedEvent(
+                aggregateIdentifier = command.aggregateIdentifier,
+                name = command.name
+            ),
+            rootContextId = command.aggregateIdentifier.identifier
+        )
+        return command.aggregateIdentifier
     }
-    apply(
-        CompanyCreatedEvent(aggregateIdentifier = command.aggregateIdentifier, name = command.name),
-        rootContextId = command.aggregateIdentifier.identifier)
-    return command.aggregateIdentifier
-  }
 
-  @EventSourcingHandler
-  fun on(event: CompanyCreatedEvent) {
-    aggregateIdentifier = event.aggregateIdentifier
-    name = event.name
-  }
+    @EventSourcingHandler
+    fun on(event: CompanyCreatedEvent) {
+        aggregateIdentifier = event.aggregateIdentifier
+        name = event.name
+    }
 
-  override fun getRootContextId() = aggregateIdentifier.identifier
+    override fun getRootContextId() = aggregateIdentifier.identifier
 }

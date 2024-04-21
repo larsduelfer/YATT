@@ -23,55 +23,57 @@ class CompanyController(
     private val commandGateway: CommandGateway,
     private val queryGateway: QueryGateway,
 ) {
-  @GetMapping
-  fun getAllCompanies(): CompletableFuture<List<CompanyQueryResult>> =
-      queryGateway.queryMany(AllCompaniesQuery())
+    @GetMapping
+    fun getAllCompanies(): CompletableFuture<List<CompanyQueryResult>> =
+        queryGateway.queryMany(AllCompaniesQuery())
 
-  @GetMapping(produces = [APPLICATION_NDJSON_VALUE])
-  fun getAllCompaniesAndUpdates(): Flux<CompanyQueryResult> {
-    val query =
-        queryGateway.subscriptionQuery(
-            AllCompaniesQuery(),
-            ResponseTypes.multipleInstancesOf(CompanyQueryResult::class.java),
-            ResponseTypes.instanceOf(CompanyQueryResult::class.java))
+    @GetMapping(produces = [APPLICATION_NDJSON_VALUE])
+    fun getAllCompaniesAndUpdates(): Flux<CompanyQueryResult> {
+        val query =
+            queryGateway.subscriptionQuery(
+                AllCompaniesQuery(),
+                ResponseTypes.multipleInstancesOf(CompanyQueryResult::class.java),
+                ResponseTypes.instanceOf(CompanyQueryResult::class.java)
+            )
 
-    return query
-        .initialResult()
-        .flatMapMany { Flux.fromIterable(it) }
-        .concatWith(query.updates())
-        .doFinally { query.cancel() }
-  }
+        return query
+            .initialResult()
+            .flatMapMany { Flux.fromIterable(it) }
+            .concatWith(query.updates())
+            .doFinally { query.cancel() }
+    }
 
-  @GetMapping("/{companyId}")
-  fun getCompanyById(
-      @PathVariable("companyId") companyId: CompanyId
-  ): ResponseEntity<CompanyQueryResult> =
-      queryGateway
-          .queryOptional<CompanyQueryResult, CompanyQuery>(CompanyQuery(companyId))
-          .join()
-          .map { ResponseEntity(it, HttpStatus.OK) }
-          .orElse(ResponseEntity(HttpStatus.NOT_FOUND))
+    @GetMapping("/{companyId}")
+    fun getCompanyById(
+        @PathVariable("companyId") companyId: CompanyId
+    ): ResponseEntity<CompanyQueryResult> =
+        queryGateway
+            .queryOptional<CompanyQueryResult, CompanyQuery>(CompanyQuery(companyId))
+            .join()
+            .map { ResponseEntity(it, HttpStatus.OK) }
+            .orElse(ResponseEntity(HttpStatus.NOT_FOUND))
 
-  @GetMapping(path = ["/{companyId}"], produces = [APPLICATION_NDJSON_VALUE])
-  fun getCompanyByIdAndUpdates(
-      @PathVariable("companyId") companyId: CompanyId
-  ): Flux<CompanyQueryResult> {
-    val query =
-        queryGateway.subscriptionQuery(
-            CompanyQuery(companyId),
-            ResponseTypes.instanceOf(CompanyQueryResult::class.java),
-            ResponseTypes.instanceOf(CompanyQueryResult::class.java))
+    @GetMapping(path = ["/{companyId}"], produces = [APPLICATION_NDJSON_VALUE])
+    fun getCompanyByIdAndUpdates(
+        @PathVariable("companyId") companyId: CompanyId
+    ): Flux<CompanyQueryResult> {
+        val query =
+            queryGateway.subscriptionQuery(
+                CompanyQuery(companyId),
+                ResponseTypes.instanceOf(CompanyQueryResult::class.java),
+                ResponseTypes.instanceOf(CompanyQueryResult::class.java)
+            )
 
-    return query.initialResult().concatWith(query.updates()).doFinally { query.cancel() }
-  }
+        return query.initialResult().concatWith(query.updates()).doFinally { query.cancel() }
+    }
 
-  @PostMapping
-  fun createCompany(@RequestBody body: CreateCompanyDto): CompletableFuture<String> =
-      createCompanyWithId(CompanyId(), body)
+    @PostMapping
+    fun createCompany(@RequestBody body: CreateCompanyDto): CompletableFuture<String> =
+        createCompanyWithId(CompanyId(), body)
 
-  @PostMapping("/{companyId}")
-  fun createCompanyWithId(
-      @PathVariable("companyId") companyId: CompanyId,
-      @RequestBody body: CreateCompanyDto,
-  ): CompletableFuture<String> = commandGateway.send(body.toCommand(companyId))
+    @PostMapping("/{companyId}")
+    fun createCompanyWithId(
+        @PathVariable("companyId") companyId: CompanyId,
+        @RequestBody body: CreateCompanyDto,
+    ): CompletableFuture<String> = commandGateway.send(body.toCommand(companyId))
 }

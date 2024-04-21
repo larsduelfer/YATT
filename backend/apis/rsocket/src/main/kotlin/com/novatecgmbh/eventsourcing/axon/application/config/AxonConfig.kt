@@ -22,75 +22,78 @@ import reactor.core.publisher.Mono
 @Configuration
 class AxonBeansEnhancementsConfiguration {
 
-  @Autowired
-  fun reactiveCommandGateway(queryGateway: ReactorCommandGateway) {
-    queryGateway.registerDispatchInterceptor(UserInjectingCommandMessageDispatchInterceptor())
-  }
+    @Autowired
+    fun reactiveCommandGateway(queryGateway: ReactorCommandGateway) {
+        queryGateway.registerDispatchInterceptor(UserInjectingCommandMessageDispatchInterceptor())
+    }
 
-  @Autowired
-  fun reactiveQueryGateway(queryGateway: ReactorQueryGateway) {
-    queryGateway.registerDispatchInterceptor(UserInjectingQueryMessageDispatchInterceptor())
-  }
+    @Autowired
+    fun reactiveQueryGateway(queryGateway: ReactorQueryGateway) {
+        queryGateway.registerDispatchInterceptor(UserInjectingQueryMessageDispatchInterceptor())
+    }
 }
 
 @Configuration
 class AxonAdditionalBeansConfiguration {
 
-  @Bean
-  fun correlationDataProviders(): CorrelationDataProvider =
-      MultiCorrelationDataProvider<CommandMessage<*>>(
-          listOf(
-              SimpleCorrelationDataProvider(*AUDIT_KEYS),
-              MessageOriginProvider(),
-          ))
+    @Bean
+    fun correlationDataProviders(): CorrelationDataProvider =
+        MultiCorrelationDataProvider<CommandMessage<*>>(
+            listOf(
+                SimpleCorrelationDataProvider(*AUDIT_KEYS),
+                MessageOriginProvider(),
+            )
+        )
 }
 
 class UserInjectingQueryMessageDispatchInterceptor :
     ReactorMessageDispatchInterceptor<QueryMessage<*, *>> {
-  override fun intercept(messageMono: Mono<QueryMessage<*, *>>): Mono<QueryMessage<*, *>> =
-      ReactiveSecurityContextHolder.getContext()
-          .switchIfEmpty(Mono.error(RuntimeException("ReactiveSecurityContext is empty")))
-          .flatMap {
-            val auth: Authentication? = it.authentication
-            if (auth == null) {
-              Mono.error(RuntimeException("Authentication is null!"))
-            } else {
-              val principal = auth.principal
-              if (principal is RegisteredUserProfile) {
-                messageMono.map { message ->
-                  message.andMetaData(
-                      mutableMapOf<String, String>(
-                          AUDIT_USER_ID_META_DATA_KEY to principal.identifier.toString(),
-                      ))
+    override fun intercept(messageMono: Mono<QueryMessage<*, *>>): Mono<QueryMessage<*, *>> =
+        ReactiveSecurityContextHolder.getContext()
+            .switchIfEmpty(Mono.error(RuntimeException("ReactiveSecurityContext is empty")))
+            .flatMap {
+                val auth: Authentication? = it.authentication
+                if (auth == null) {
+                    Mono.error(RuntimeException("Authentication is null!"))
+                } else {
+                    val principal = auth.principal
+                    if (principal is RegisteredUserProfile) {
+                        messageMono.map { message ->
+                            message.andMetaData(
+                                mutableMapOf<String, String>(
+                                    AUDIT_USER_ID_META_DATA_KEY to principal.identifier.toString(),
+                                )
+                            )
+                        }
+                    } else {
+                        messageMono
+                    }
                 }
-              } else {
-                messageMono
-              }
             }
-          }
 }
 
 class UserInjectingCommandMessageDispatchInterceptor :
     ReactorMessageDispatchInterceptor<CommandMessage<*>> {
-  override fun intercept(messageMono: Mono<CommandMessage<*>>): Mono<CommandMessage<*>> =
-      ReactiveSecurityContextHolder.getContext()
-          .switchIfEmpty(Mono.error(RuntimeException("ReactiveSecurityContext is empty")))
-          .flatMap {
-            val auth: Authentication? = it.authentication
-            if (auth == null) {
-              Mono.error(RuntimeException("Authentication is null!"))
-            } else {
-              val principal = auth.principal
-              if (principal is RegisteredUserProfile) {
-                messageMono.map { message ->
-                  message.andMetaData(
-                      mutableMapOf<String, String>(
-                          AUDIT_USER_ID_META_DATA_KEY to principal.identifier.toString(),
-                      ))
+    override fun intercept(messageMono: Mono<CommandMessage<*>>): Mono<CommandMessage<*>> =
+        ReactiveSecurityContextHolder.getContext()
+            .switchIfEmpty(Mono.error(RuntimeException("ReactiveSecurityContext is empty")))
+            .flatMap {
+                val auth: Authentication? = it.authentication
+                if (auth == null) {
+                    Mono.error(RuntimeException("Authentication is null!"))
+                } else {
+                    val principal = auth.principal
+                    if (principal is RegisteredUserProfile) {
+                        messageMono.map { message ->
+                            message.andMetaData(
+                                mutableMapOf<String, String>(
+                                    AUDIT_USER_ID_META_DATA_KEY to principal.identifier.toString(),
+                                )
+                            )
+                        }
+                    } else {
+                        messageMono
+                    }
                 }
-              } else {
-                messageMono
-              }
             }
-          }
 }
