@@ -20,19 +20,19 @@ class ParticipantController(
     val commandGateway: ReactorCommandGateway
 ) {
 
-  @MessageMapping("participants.create")
-  fun createParticipant(data: CreateParticipantDto): Mono<ParticipantId> =
-      commandGateway.send(data.toCommand())
+    @MessageMapping("participants.create")
+    fun createParticipant(data: CreateParticipantDto): Mono<ParticipantId> =
+        commandGateway.send(data.toCommand())
 
-  @MessageMapping("participants.{id}")
-  fun subscribeParticipantByIdUpdates(
-      @DestinationVariable id: ParticipantId
-  ): Flux<ParticipantQueryResult> =
-      queryGateway.queryUpdates(ParticipantQuery(id), ParticipantQueryResult::class.java)
+    @MessageMapping("participants.{id}")
+    fun subscribeParticipantByIdUpdates(
+        @DestinationVariable id: ParticipantId
+    ): Flux<ParticipantQueryResult> =
+        queryGateway.queryUpdates(ParticipantQuery(id), ParticipantQueryResult::class.java)
 
-  @MessageMapping("projects.{id}.participants")
-  fun subscribeParticipantsByProjectUpdates(
-      @DestinationVariable id: ProjectId
-  ): Flux<ParticipantQueryResult> =
-      queryGateway.queryUpdates(ParticipantByProjectQuery(id), ParticipantQueryResult::class.java)
+    @MessageMapping("projects.{id}.participants")
+    fun subscribeParticipantsByProjectUpdates(
+        @DestinationVariable id: ProjectId
+    ): Flux<ParticipantQueryResult> =
+        queryGateway.queryUpdates(ParticipantByProjectQuery(id), ParticipantQueryResult::class.java)
 }

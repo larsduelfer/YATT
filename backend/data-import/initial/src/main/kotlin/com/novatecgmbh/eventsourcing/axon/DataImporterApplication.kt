@@ -6,5 +6,5 @@ import org.springframework.boot.runApplication
 @SpringBootApplication class DataImporterApplication
 
 fun main(args: Array<String>) {
-  runApplication<DataImporterApplication>(*args)
+    runApplication<DataImporterApplication>(*args)
 }

@@ -20,25 +20,25 @@ class RSocketSecurityConfig(
     @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri}") val issuer: String,
 ) {
 
-  @Bean
-  fun messageHandler(strategies: RSocketStrategies) =
-      RSocketMessageHandler().apply {
-        argumentResolverConfigurer.addCustomResolver(AuthenticationPrincipalArgumentResolver())
-        rSocketStrategies = strategies
-      }
+    @Bean
+    fun messageHandler(strategies: RSocketStrategies) =
+        RSocketMessageHandler().apply {
+            argumentResolverConfigurer.addCustomResolver(AuthenticationPrincipalArgumentResolver())
+            rSocketStrategies = strategies
+        }
 
-  @Bean
-  fun rsocketInterceptor(
-      rsocket: RSocketSecurity,
-      decoder: ReactiveJwtDecoder,
-      converter: UserProfileAuthenticationConverter
-  ): PayloadSocketAcceptorInterceptor =
-      rsocket
-          .authorizePayload { authorize -> authorize.anyExchange().authenticated() }
-          .jwt {
-            val manager = JwtReactiveAuthenticationManager(decoder)
-            manager.setJwtAuthenticationConverter(converter)
-            it.authenticationManager(manager)
-          }
-          .build()
+    @Bean
+    fun rsocketInterceptor(
+        rsocket: RSocketSecurity,
+        decoder: ReactiveJwtDecoder,
+        converter: UserProfileAuthenticationConverter
+    ): PayloadSocketAcceptorInterceptor =
+        rsocket
+            .authorizePayload { authorize -> authorize.anyExchange().authenticated() }
+            .jwt {
+                val manager = JwtReactiveAuthenticationManager(decoder)
+                manager.setJwtAuthenticationConverter(converter)
+                it.authenticationManager(manager)
+            }
+            .build()
 }

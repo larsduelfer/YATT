@@ -16,29 +16,31 @@ import org.springframework.stereotype.Component
 @ProcessingGroup("root-context-id-mapping-projector-project")
 class RootContextIdMappingProjector(private val repository: RootContextIdMappingRepository) {
 
-  @EventHandler
-  fun on(event: ProjectCreatedEvent, @RootContextId rootContextId: String) =
-      addIdMapping("PROJECT", event.aggregateIdentifier.toString(), rootContextId)
+    @EventHandler
+    fun on(event: ProjectCreatedEvent, @RootContextId rootContextId: String) =
+        addIdMapping("PROJECT", event.aggregateIdentifier.toString(), rootContextId)
 
-  @EventHandler
-  fun on(event: TaskCreatedEvent, @RootContextId rootContextId: String) =
-      addIdMapping("TASK", event.identifier.toString(), rootContextId)
+    @EventHandler
+    fun on(event: TaskCreatedEvent, @RootContextId rootContextId: String) =
+        addIdMapping("TASK", event.identifier.toString(), rootContextId)
 
-  @EventHandler
-  fun on(event: CompanyCreatedEvent, @RootContextId rootContextId: String) =
-      addIdMapping("COMPANY", event.aggregateIdentifier.toString(), rootContextId)
+    @EventHandler
+    fun on(event: CompanyCreatedEvent, @RootContextId rootContextId: String) =
+        addIdMapping("COMPANY", event.aggregateIdentifier.toString(), rootContextId)
 
-  @EventHandler
-  fun on(event: UserRegisteredEvent, @RootContextId rootContextId: String) =
-      addIdMapping("USER", event.aggregateIdentifier.toString(), rootContextId)
+    @EventHandler
+    fun on(event: UserRegisteredEvent, @RootContextId rootContextId: String) =
+        addIdMapping("USER", event.aggregateIdentifier.toString(), rootContextId)
 
-  fun addIdMapping(aggregateType: String, aggregateIdentifier: String, rootContextId: String) =
-      repository.save(
-          RootContextIdMapping(
-              RootContextIdMappingKey(aggregateType, aggregateIdentifier, rootContextId)))
+    fun addIdMapping(aggregateType: String, aggregateIdentifier: String, rootContextId: String) =
+        repository.save(
+            RootContextIdMapping(
+                RootContextIdMappingKey(aggregateType, aggregateIdentifier, rootContextId)
+            )
+        )
 
-  @ResetHandler
-  fun reset() {
-    repository.deleteAll()
-  }
+    @ResetHandler
+    fun reset() {
+        repository.deleteAll()
+    }
 }

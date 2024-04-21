@@ -26,30 +26,31 @@ class UserController(
     private val queryGateway: QueryGateway,
 ) {
 
-  @GetMapping
-  fun getAllUsers(): CompletableFuture<List<UserQueryResult>> =
-      queryGateway.queryMany(AllUsersQuery())
+    @GetMapping
+    fun getAllUsers(): CompletableFuture<List<UserQueryResult>> =
+        queryGateway.queryMany(AllUsersQuery())
 
-  @GetMapping("/current")
-  fun getCurrentUser(
-      @AuthenticationPrincipal principal: UserDetails
-  ): ResponseEntity<UserQueryResult> =
-      queryGateway
-          .queryOptional<UserQueryResult, FindUserByExternalUserIdQuery>(
-              FindUserByExternalUserIdQuery(principal.username))
-          .get()
-          .map { ResponseEntity(it, HttpStatus.OK) }
-          .orElse(ResponseEntity(HttpStatus.NOT_FOUND))
+    @GetMapping("/current")
+    fun getCurrentUser(
+        @AuthenticationPrincipal principal: UserDetails
+    ): ResponseEntity<UserQueryResult> =
+        queryGateway
+            .queryOptional<UserQueryResult, FindUserByExternalUserIdQuery>(
+                FindUserByExternalUserIdQuery(principal.username)
+            )
+            .get()
+            .map { ResponseEntity(it, HttpStatus.OK) }
+            .orElse(ResponseEntity(HttpStatus.NOT_FOUND))
 
-  @PostMapping("/current")
-  fun registerUser(
-      @RequestBody body: RegisterUserDto,
-      @AuthenticationPrincipal principal: UnregisteredUserPrincipal
-  ): CompletableFuture<UserId> = commandGateway.send(body.toCommand(principal.username))
+    @PostMapping("/current")
+    fun registerUser(
+        @RequestBody body: RegisterUserDto,
+        @AuthenticationPrincipal principal: UnregisteredUserPrincipal
+    ): CompletableFuture<UserId> = commandGateway.send(body.toCommand(principal.username))
 
-  @PostMapping("/current/rename")
-  fun renameUser(
-      @RequestBody body: RenameUserDto,
-      @AuthenticationPrincipal principal: RegisteredUserPrincipal
-  ): CompletableFuture<UserId> = commandGateway.send(body.toCommand(principal.identifier))
+    @PostMapping("/current/rename")
+    fun renameUser(
+        @RequestBody body: RenameUserDto,
+        @AuthenticationPrincipal principal: RegisteredUserPrincipal
+    ): CompletableFuture<UserId> = commandGateway.send(body.toCommand(principal.identifier))
 }

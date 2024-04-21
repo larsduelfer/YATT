@@ -4,5 +4,5 @@ import com.novatecgmbh.eventsourcing.axon.company.company.api.CompanyId
 import com.novatecgmbh.eventsourcing.axon.company.company.api.CreateCompanyCommand
 
 data class CreateCompanyDto(val companyId: CompanyId = CompanyId(), val name: String) {
-  fun toCommand() = CreateCompanyCommand(companyId, name)
+    fun toCommand() = CreateCompanyCommand(companyId, name)
 }

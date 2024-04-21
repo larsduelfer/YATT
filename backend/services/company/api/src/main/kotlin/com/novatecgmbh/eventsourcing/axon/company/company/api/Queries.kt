@@ -7,5 +7,5 @@ class AllCompaniesQuery
 data class CompanyQuery(val companyId: CompanyId)
 
 data class CompanyQueryResult(val identifier: CompanyId, val version: Long, val name: String) {
-  fun toAggregateReference() = AggregateReference(identifier, name)
+    fun toAggregateReference() = AggregateReference(identifier, name)
 }

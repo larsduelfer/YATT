@@ -8,5 +8,5 @@ data class RenameProjectDto(
     val version: Long,
     val name: String,
 ) {
-  fun toCommand() = RenameProjectCommand(identifier, version, name)
+    fun toCommand() = RenameProjectCommand(identifier, version, name)
 }

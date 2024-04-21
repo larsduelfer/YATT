@@ -27,74 +27,79 @@ class ProjectControllerV1(
     private val commandGateway: CommandGateway,
     private val queryGateway: QueryGateway,
 ) {
-  @GetMapping
-  fun getAllProjects(
-      @AuthenticationPrincipal user: RegisteredUserPrincipal
-  ): CompletableFuture<List<ProjectQueryResult>> =
-      queryGateway.queryMany(MyProjectsQuery(user.identifier))
+    @GetMapping
+    fun getAllProjects(
+        @AuthenticationPrincipal user: RegisteredUserPrincipal
+    ): CompletableFuture<List<ProjectQueryResult>> =
+        queryGateway.queryMany(MyProjectsQuery(user.identifier))
 
-  @GetMapping("/{projectId}")
-  fun getProjectById(
-      @PathVariable("projectId") projectId: ProjectId
-  ): ResponseEntity<ProjectQueryResult> =
-      queryGateway
-          .queryOptional<ProjectQueryResult, ProjectQuery>(ProjectQuery(projectId))
-          .join()
-          .map { ResponseEntity(it, HttpStatus.OK) }
-          .orElse(ResponseEntity(HttpStatus.NOT_FOUND))
+    @GetMapping("/{projectId}")
+    fun getProjectById(
+        @PathVariable("projectId") projectId: ProjectId
+    ): ResponseEntity<ProjectQueryResult> =
+        queryGateway
+            .queryOptional<ProjectQueryResult, ProjectQuery>(ProjectQuery(projectId))
+            .join()
+            .map { ResponseEntity(it, HttpStatus.OK) }
+            .orElse(ResponseEntity(HttpStatus.NOT_FOUND))
 
-  @PostMapping
-  fun createProject(@RequestBody body: CreateProjectDto): Mono<ResponseEntity<ProjectQueryResult>> =
-      createProjectWithId(ProjectId(), body)
+    @PostMapping
+    fun createProject(
+        @RequestBody body: CreateProjectDto
+    ): Mono<ResponseEntity<ProjectQueryResult>> = createProjectWithId(ProjectId(), body)
 
-  @PostMapping("/{projectId}")
-  fun createProjectWithId(
-      @PathVariable("projectId") projectId: ProjectId,
-      @RequestBody project: CreateProjectDto,
-  ): Mono<ResponseEntity<ProjectQueryResult>> =
-      queryGateway.subscriptionQuery(
-              ProjectQuery(projectId),
-              ResponseTypes.instanceOf(ProjectQueryResult::class.java),
-              ResponseTypes.instanceOf(ProjectQueryResult::class.java),
-          )
-          .let { queryResult ->
-            Mono.`when`(queryResult.initialResult())
-                .then(
-                    Mono.fromCompletionStage {
-                      commandGateway.send<Unit>(project.toCommand(projectId))
-                    })
-                .thenMany(queryResult.updates())
-                .next()
-                .map { entity -> ResponseEntity.ok(entity) }
-                .timeout(Duration.ofSeconds(5))
-                .doFinally { queryResult.cancel() }
-          }
+    @PostMapping("/{projectId}")
+    fun createProjectWithId(
+        @PathVariable("projectId") projectId: ProjectId,
+        @RequestBody project: CreateProjectDto,
+    ): Mono<ResponseEntity<ProjectQueryResult>> =
+        queryGateway
+            .subscriptionQuery(
+                ProjectQuery(projectId),
+                ResponseTypes.instanceOf(ProjectQueryResult::class.java),
+                ResponseTypes.instanceOf(ProjectQueryResult::class.java),
+            )
+            .let { queryResult ->
+                Mono.`when`(queryResult.initialResult())
+                    .then(
+                        Mono.fromCompletionStage {
+                            commandGateway.send<Unit>(project.toCommand(projectId))
+                        }
+                    )
+                    .thenMany(queryResult.updates())
+                    .next()
+                    .map { entity -> ResponseEntity.ok(entity) }
+                    .timeout(Duration.ofSeconds(5))
+                    .doFinally { queryResult.cancel() }
+            }
 
-  @PutMapping("/{projectId}")
-  fun updateProject(
-      @PathVariable("projectId") projectId: ProjectId,
-      @RequestBody body: UpdateProjectDto,
-  ): Mono<ResponseEntity<ProjectQueryResult>> =
-      queryGateway.subscriptionQuery(
-              ProjectQuery(projectId),
-              ResponseTypes.instanceOf(ProjectQueryResult::class.java),
-              ResponseTypes.instanceOf(ProjectQueryResult::class.java),
-          )
-          .let { queryResult ->
-            Mono.`when`(queryResult.initialResult())
-                .then(
-                    Mono.fromCompletionStage {
-                      commandGateway.send<Long>(body.toCommand(projectId))
-                    })
-                .flatMap { expectedAggregateVersion ->
-                  queryResult
-                      .updates()
-                      .startWith(queryResult.initialResult())
-                      .skipUntil { entity -> entity.version == expectedAggregateVersion }
-                      .next()
-                }
-                .map { entity -> ResponseEntity.ok(entity) }
-                .timeout(Duration.ofSeconds(5))
-                .doFinally { queryResult.cancel() }
-          }
+    @PutMapping("/{projectId}")
+    fun updateProject(
+        @PathVariable("projectId") projectId: ProjectId,
+        @RequestBody body: UpdateProjectDto,
+    ): Mono<ResponseEntity<ProjectQueryResult>> =
+        queryGateway
+            .subscriptionQuery(
+                ProjectQuery(projectId),
+                ResponseTypes.instanceOf(ProjectQueryResult::class.java),
+                ResponseTypes.instanceOf(ProjectQueryResult::class.java),
+            )
+            .let { queryResult ->
+                Mono.`when`(queryResult.initialResult())
+                    .then(
+                        Mono.fromCompletionStage {
+                            commandGateway.send<Long>(body.toCommand(projectId))
+                        }
+                    )
+                    .flatMap { expectedAggregateVersion ->
+                        queryResult
+                            .updates()
+                            .startWith(queryResult.initialResult())
+                            .skipUntil { entity -> entity.version == expectedAggregateVersion }
+                            .next()
+                    }
+                    .map { entity -> ResponseEntity.ok(entity) }
+                    .timeout(Duration.ofSeconds(5))
+                    .doFinally { queryResult.cancel() }
+            }
 }

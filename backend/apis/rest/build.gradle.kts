@@ -10,7 +10,7 @@ dependencies {
   api(project(":apis:common"))
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-  implementation("io.opentracing.contrib:opentracing-spring-jaeger-cloud-starter")
+  implementation("io.opentracing.contrib:opentracing-spring-jaeger-web-starter")
   implementation("io.projectreactor:reactor-core")
   implementation("org.axonframework:axon-spring-boot-starter")
   implementation("org.axonframework.extensions.kotlin:axon-kotlin")

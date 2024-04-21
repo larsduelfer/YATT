@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller
 @Controller
 class CompanyMutationsController(val commandGateway: CommandGateway) {
 
-  @MutationMapping
-  fun createCompany(@Argument name: String): CompletableFuture<CompanyId> =
-      commandGateway.send(CreateCompanyCommand(CompanyId(), name))
+    @MutationMapping
+    fun createCompany(@Argument name: String): CompletableFuture<CompanyId> =
+        commandGateway.send(CreateCompanyCommand(CompanyId(), name))
 }

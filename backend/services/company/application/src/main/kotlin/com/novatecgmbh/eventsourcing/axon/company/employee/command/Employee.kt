@@ -18,109 +18,123 @@ import org.springframework.beans.factory.annotation.Autowired
 
 @Aggregate
 class Employee : BaseAggregate() {
-  @AggregateIdentifier private lateinit var aggregateIdentifier: EmployeeId
-  private lateinit var userId: UserId
-  private lateinit var companyId: CompanyId
-  private var isAdmin: Boolean = false
-  private var isProjectManager: Boolean = false
+    @AggregateIdentifier private lateinit var aggregateIdentifier: EmployeeId
+    private lateinit var userId: UserId
+    private lateinit var companyId: CompanyId
+    private var isAdmin: Boolean = false
+    private var isProjectManager: Boolean = false
 
-  @CommandHandler
-  @CreationPolicy(AggregateCreationPolicy.CREATE_IF_MISSING)
-  fun handle(
-      command: CreateEmployeeCommand,
-      @Autowired employeeUniqueKeyRepository: EmployeeUniqueKeyRepository,
-      @Autowired referenceCheckerService: ReferenceCheckerService
-  ): EmployeeId {
-    if (::aggregateIdentifier.isInitialized) {
-      throw AlreadyExistsException()
+    @CommandHandler
+    @CreationPolicy(AggregateCreationPolicy.CREATE_IF_MISSING)
+    fun handle(
+        command: CreateEmployeeCommand,
+        @Autowired employeeUniqueKeyRepository: EmployeeUniqueKeyRepository,
+        @Autowired referenceCheckerService: ReferenceCheckerService
+    ): EmployeeId {
+        if (::aggregateIdentifier.isInitialized) {
+            throw AlreadyExistsException()
+        }
+        assertNoEmployeeExistsForCompanyAndUser(
+            employeeUniqueKeyRepository,
+            command.companyId,
+            command.userId
+        )
+        referenceCheckerService.assertUserExists(command.userId.identifier)
+        referenceCheckerService.assertCompanyExists(command.companyId.identifier)
+        apply(
+            EmployeeCreatedEvent(
+                aggregateIdentifier = command.aggregateIdentifier,
+                userId = command.userId,
+                companyId = command.companyId
+            ),
+            rootContextId = command.companyId.identifier
+        )
+        return command.aggregateIdentifier
     }
-    assertNoEmployeeExistsForCompanyAndUser(
-        employeeUniqueKeyRepository, command.companyId, command.userId)
-    referenceCheckerService.assertUserExists(command.userId.identifier)
-    referenceCheckerService.assertCompanyExists(command.companyId.identifier)
-    apply(
-        EmployeeCreatedEvent(
-            aggregateIdentifier = command.aggregateIdentifier,
-            userId = command.userId,
-            companyId = command.companyId),
-        rootContextId = command.companyId.identifier)
-    return command.aggregateIdentifier
-  }
 
-  private fun assertNoEmployeeExistsForCompanyAndUser(
-      employeeUniqueKeyRepository: EmployeeUniqueKeyRepository,
-      companyId: CompanyId,
-      userId: UserId
-  ) {
-    if (employeeUniqueKeyRepository.existsByCompanyIdAndUserId(companyId, userId))
-        throw IllegalArgumentException("Employee already exists for this company and user")
-  }
-
-  @CommandHandler
-  fun handle(command: GrantAdminPermissionToEmployee): Long {
-    if (!isAdmin) {
-      apply(
-          AdminPermissionGrantedForEmployeeEvent(aggregateIdentifier = command.aggregateIdentifier))
+    private fun assertNoEmployeeExistsForCompanyAndUser(
+        employeeUniqueKeyRepository: EmployeeUniqueKeyRepository,
+        companyId: CompanyId,
+        userId: UserId
+    ) {
+        if (employeeUniqueKeyRepository.existsByCompanyIdAndUserId(companyId, userId))
+            throw IllegalArgumentException("Employee already exists for this company and user")
     }
-    return AggregateLifecycle.getVersion()
-  }
 
-  @CommandHandler
-  fun handle(command: RemoveAdminPermissionFromEmployee): Long {
-    if (isAdmin) {
-      apply(
-          AdminPermissionRemovedFromEmployeeEvent(
-              aggregateIdentifier = command.aggregateIdentifier))
+    @CommandHandler
+    fun handle(command: GrantAdminPermissionToEmployee): Long {
+        if (!isAdmin) {
+            apply(
+                AdminPermissionGrantedForEmployeeEvent(
+                    aggregateIdentifier = command.aggregateIdentifier
+                )
+            )
+        }
+        return AggregateLifecycle.getVersion()
     }
-    return AggregateLifecycle.getVersion()
-  }
 
-  @CommandHandler
-  fun handle(command: GrantProjectManagerPermissionToEmployee): Long {
-    if (!isProjectManager) {
-      apply(
-          ProjectManagerPermissionGrantedForEmployeeEvent(
-              aggregateIdentifier = command.aggregateIdentifier))
+    @CommandHandler
+    fun handle(command: RemoveAdminPermissionFromEmployee): Long {
+        if (isAdmin) {
+            apply(
+                AdminPermissionRemovedFromEmployeeEvent(
+                    aggregateIdentifier = command.aggregateIdentifier
+                )
+            )
+        }
+        return AggregateLifecycle.getVersion()
     }
-    return AggregateLifecycle.getVersion()
-  }
 
-  @CommandHandler
-  fun handle(command: RemoveProjectManagerPermissionFromEmployee): Long {
-    if (isProjectManager) {
-      apply(
-          ProjectManagerPermissionRemovedFromEmployeeEvent(
-              aggregateIdentifier = command.aggregateIdentifier))
+    @CommandHandler
+    fun handle(command: GrantProjectManagerPermissionToEmployee): Long {
+        if (!isProjectManager) {
+            apply(
+                ProjectManagerPermissionGrantedForEmployeeEvent(
+                    aggregateIdentifier = command.aggregateIdentifier
+                )
+            )
+        }
+        return AggregateLifecycle.getVersion()
     }
-    return AggregateLifecycle.getVersion()
-  }
 
-  @EventSourcingHandler
-  fun on(event: EmployeeCreatedEvent) {
-    aggregateIdentifier = event.aggregateIdentifier
-    userId = event.userId
-    companyId = event.companyId
-  }
+    @CommandHandler
+    fun handle(command: RemoveProjectManagerPermissionFromEmployee): Long {
+        if (isProjectManager) {
+            apply(
+                ProjectManagerPermissionRemovedFromEmployeeEvent(
+                    aggregateIdentifier = command.aggregateIdentifier
+                )
+            )
+        }
+        return AggregateLifecycle.getVersion()
+    }
 
-  @EventSourcingHandler
-  fun on(enum: AdminPermissionGrantedForEmployeeEvent) {
-    isAdmin = true
-  }
+    @EventSourcingHandler
+    fun on(event: EmployeeCreatedEvent) {
+        aggregateIdentifier = event.aggregateIdentifier
+        userId = event.userId
+        companyId = event.companyId
+    }
 
-  @EventSourcingHandler
-  fun on(enum: AdminPermissionRemovedFromEmployeeEvent) {
-    isAdmin = false
-  }
+    @EventSourcingHandler
+    fun on(enum: AdminPermissionGrantedForEmployeeEvent) {
+        isAdmin = true
+    }
 
-  @EventSourcingHandler
-  fun on(enum: ProjectManagerPermissionGrantedForEmployeeEvent) {
-    isProjectManager = true
-  }
+    @EventSourcingHandler
+    fun on(enum: AdminPermissionRemovedFromEmployeeEvent) {
+        isAdmin = false
+    }
 
-  @EventSourcingHandler
-  fun on(enum: ProjectManagerPermissionRemovedFromEmployeeEvent) {
-    isProjectManager = false
-  }
+    @EventSourcingHandler
+    fun on(enum: ProjectManagerPermissionGrantedForEmployeeEvent) {
+        isProjectManager = true
+    }
 
-  override fun getRootContextId() = companyId.identifier
+    @EventSourcingHandler
+    fun on(enum: ProjectManagerPermissionRemovedFromEmployeeEvent) {
+        isProjectManager = false
+    }
+
+    override fun getRootContextId() = companyId.identifier
 }

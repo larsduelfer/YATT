@@ -17,27 +17,29 @@ class TaskQueryHandler(
     private val authService: ProjectAuthorizationService
 ) {
 
-  @QueryHandler
-  fun handle(query: TasksByProjectQuery, @AuditUserId userId: String): Iterable<TaskQueryResult> =
-      authService.runWhenAuthorizedForProject(UserId(userId), query.projectId) {
-        repository.findAllByProjectId(query.projectId).map { it.toQueryResult() }
-      }
-
-  @QueryHandler
-  fun handle(query: TaskQuery, @AuditUserId userId: String): Optional<TaskQueryResult> =
-      repository.findById(query.taskId).map { it.toQueryResult() }?.let {
-        authService.runWhenAuthorizedForProject(UserId(userId), it.get().projectId) { it }
-      }
-          ?: Optional.empty()
-
-  @QueryHandler
-  fun handle(
-      query: TasksByMultipleProjectsQuery,
-      @AuditUserId userId: String
-  ): Iterable<TaskQueryResult> =
-      authService.runWhenAuthorizedForAllProjects(UserId(userId), query.projectIds) {
-        repository.findAllByProjectIdInAndDatesInRange(query.projectIds, query.from, query.to).map {
-          it.toQueryResult()
+    @QueryHandler
+    fun handle(query: TasksByProjectQuery, @AuditUserId userId: String): Iterable<TaskQueryResult> =
+        authService.runWhenAuthorizedForProject(UserId(userId), query.projectId) {
+            repository.findAllByProjectId(query.projectId).map { it.toQueryResult() }
         }
-      }
+
+    @QueryHandler
+    fun handle(query: TaskQuery, @AuditUserId userId: String): Optional<TaskQueryResult> =
+        repository
+            .findById(query.taskId)
+            .map { it.toQueryResult() }
+            ?.let {
+                authService.runWhenAuthorizedForProject(UserId(userId), it.get().projectId) { it }
+            } ?: Optional.empty()
+
+    @QueryHandler
+    fun handle(
+        query: TasksByMultipleProjectsQuery,
+        @AuditUserId userId: String
+    ): Iterable<TaskQueryResult> =
+        authService.runWhenAuthorizedForAllProjects(UserId(userId), query.projectIds) {
+            repository
+                .findAllByProjectIdInAndDatesInRange(query.projectIds, query.from, query.to)
+                .map { it.toQueryResult() }
+        }
 }

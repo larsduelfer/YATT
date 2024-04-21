@@ -11,16 +11,17 @@ import org.springframework.stereotype.Service
 
 @Service
 class CustomUserDetailsService(val queryGateway: QueryGateway) : UserDetailsService {
-  @Throws(Exception::class)
-  override fun loadUserByUsername(username: String): UserDetails {
-    SecurityContextHelper.setAuthentication("system") // TODO ?
-    return queryGateway
-        .queryOptional<UserQueryResult, FindUserByExternalUserIdQuery>(
-            FindUserByExternalUserIdQuery(username))
-        .join()
-        .get()
-        .toRegisteredUser()
-  }
+    @Throws(Exception::class)
+    override fun loadUserByUsername(username: String): UserDetails {
+        SecurityContextHelper.setAuthentication("system") // TODO ?
+        return queryGateway
+            .queryOptional<UserQueryResult, FindUserByExternalUserIdQuery>(
+                FindUserByExternalUserIdQuery(username)
+            )
+            .join()
+            .get()
+            .toRegisteredUser()
+    }
 }
 
 fun UserQueryResult.toRegisteredUser() =

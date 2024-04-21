@@ -20,68 +20,82 @@ import org.springframework.beans.factory.annotation.Autowired
 
 @Aggregate
 class Participant() : BaseAggregate() {
-  @AggregateIdentifier private lateinit var aggregateIdentifier: ParticipantId
-  private lateinit var projectId: ProjectId
-  private lateinit var userId: UserId
+    @AggregateIdentifier private lateinit var aggregateIdentifier: ParticipantId
+    private lateinit var projectId: ProjectId
+    private lateinit var userId: UserId
 
-  // only used for auto creation of first participant when project is created
-  constructor(projectId: ProjectId, userId: UserId, companyId: CompanyId) : this() {
-    apply(
-        ParticipantCreatedEvent(
-            aggregateIdentifier = ParticipantId(),
-            projectId = projectId,
-            companyId = companyId,
-            userId = userId),
-        rootContextId = projectId.identifier)
-  }
-
-  @CommandHandler
-  @CreationPolicy(CREATE_IF_MISSING)
-  fun handle(
-      command: CreateParticipantCommand,
-      @Autowired participantUniqueKeyRepository: ParticipantUniqueKeyRepository,
-      @Autowired referenceCheckerService: ReferenceCheckerService,
-  ): ParticipantId {
-    assertAggregateDoesNotExistYet()
-    assertNoParticipantExistsForCompanyAndUser(
-        participantUniqueKeyRepository, command.projectId, command.companyId, command.userId)
-    referenceCheckerService.assertUserExists(command.userId.identifier)
-    referenceCheckerService.assertCompanyExists(command.companyId.identifier)
-    referenceCheckerService.assertProjectExists(command.projectId.identifier)
-    apply(
-        ParticipantCreatedEvent(
-            aggregateIdentifier = command.aggregateIdentifier,
-            projectId = command.projectId,
-            companyId = command.companyId,
-            userId = command.userId),
-        rootContextId = command.projectId.identifier)
-    return command.aggregateIdentifier
-  }
-
-  private fun assertAggregateDoesNotExistYet() {
-    if (::aggregateIdentifier.isInitialized) {
-      throw AlreadyExistsException()
+    // only used for auto creation of first participant when project is created
+    constructor(projectId: ProjectId, userId: UserId, companyId: CompanyId) : this() {
+        apply(
+            ParticipantCreatedEvent(
+                aggregateIdentifier = ParticipantId(),
+                projectId = projectId,
+                companyId = companyId,
+                userId = userId
+            ),
+            rootContextId = projectId.identifier
+        )
     }
-  }
 
-  private fun assertNoParticipantExistsForCompanyAndUser(
-      participantUniqueKeyRepository: ParticipantUniqueKeyRepository,
-      projectId: ProjectId,
-      companyId: CompanyId,
-      userId: UserId
-  ) {
-    if (participantUniqueKeyRepository.existsByProjectIdAndCompanyIdAndUserId(
-        projectId, companyId, userId))
-        throw IllegalArgumentException(
-            "A participant already exists for this company and user on this project")
-  }
+    @CommandHandler
+    @CreationPolicy(CREATE_IF_MISSING)
+    fun handle(
+        command: CreateParticipantCommand,
+        @Autowired participantUniqueKeyRepository: ParticipantUniqueKeyRepository,
+        @Autowired referenceCheckerService: ReferenceCheckerService,
+    ): ParticipantId {
+        assertAggregateDoesNotExistYet()
+        assertNoParticipantExistsForCompanyAndUser(
+            participantUniqueKeyRepository,
+            command.projectId,
+            command.companyId,
+            command.userId
+        )
+        referenceCheckerService.assertUserExists(command.userId.identifier)
+        referenceCheckerService.assertCompanyExists(command.companyId.identifier)
+        referenceCheckerService.assertProjectExists(command.projectId.identifier)
+        apply(
+            ParticipantCreatedEvent(
+                aggregateIdentifier = command.aggregateIdentifier,
+                projectId = command.projectId,
+                companyId = command.companyId,
+                userId = command.userId
+            ),
+            rootContextId = command.projectId.identifier
+        )
+        return command.aggregateIdentifier
+    }
 
-  @EventSourcingHandler
-  fun on(event: ParticipantCreatedEvent) {
-    aggregateIdentifier = event.aggregateIdentifier
-    projectId = event.projectId
-    userId = event.userId
-  }
+    private fun assertAggregateDoesNotExistYet() {
+        if (::aggregateIdentifier.isInitialized) {
+            throw AlreadyExistsException()
+        }
+    }
 
-  override fun getRootContextId() = projectId.identifier
+    private fun assertNoParticipantExistsForCompanyAndUser(
+        participantUniqueKeyRepository: ParticipantUniqueKeyRepository,
+        projectId: ProjectId,
+        companyId: CompanyId,
+        userId: UserId
+    ) {
+        if (
+            participantUniqueKeyRepository.existsByProjectIdAndCompanyIdAndUserId(
+                projectId,
+                companyId,
+                userId
+            )
+        )
+            throw IllegalArgumentException(
+                "A participant already exists for this company and user on this project"
+            )
+    }
+
+    @EventSourcingHandler
+    fun on(event: ParticipantCreatedEvent) {
+        aggregateIdentifier = event.aggregateIdentifier
+        projectId = event.projectId
+        userId = event.userId
+    }
+
+    override fun getRootContextId() = projectId.identifier
 }

@@ -12,5 +12,5 @@ data class CreateProjectDto(
     val deadline: LocalDate,
     val companyId: CompanyId
 ) {
-  fun toCommand() = CreateProjectCommand(identifier, name, startDate, deadline, companyId)
+    fun toCommand() = CreateProjectCommand(identifier, name, startDate, deadline, companyId)
 }

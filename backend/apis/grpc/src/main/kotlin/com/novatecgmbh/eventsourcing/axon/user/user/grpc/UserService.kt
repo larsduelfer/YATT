@@ -14,23 +14,24 @@ import org.axonframework.queryhandling.QueryGateway
 @GrpcService
 class UserService(val queryGateway: QueryGateway) : UserServiceGrpc.UserServiceImplBase() {
 
-  override fun findAll(request: Empty, responseObserver: StreamObserver<UserList>) {
-    queryGateway.queryMany<UserQueryResult, AllUsersQuery>(AllUsersQuery()).thenApply {
-      it.map { it.toUserQueryResultProto() }.apply {
-        UserList.newBuilder().addAllUsers(this).build().apply {
-          responseObserver.onNext(this)
-          responseObserver.onCompleted()
+    override fun findAll(request: Empty, responseObserver: StreamObserver<UserList>) {
+        queryGateway.queryMany<UserQueryResult, AllUsersQuery>(AllUsersQuery()).thenApply {
+            it.map { it.toUserQueryResultProto() }
+                .apply {
+                    UserList.newBuilder().addAllUsers(this).build().apply {
+                        responseObserver.onNext(this)
+                        responseObserver.onCompleted()
+                    }
+                }
         }
-      }
     }
-  }
 
-  private fun UserQueryResult.toUserQueryResultProto(): User =
-      User.newBuilder()
-          .also {
-            it.identifier = identifier.toString()
-            it.firstname = firstname
-            it.lastname = lastname
-          }
-          .build()
+    private fun UserQueryResult.toUserQueryResultProto(): User =
+        User.newBuilder()
+            .also {
+                it.identifier = identifier.toString()
+                it.firstname = firstname
+                it.lastname = lastname
+            }
+            .build()
 }

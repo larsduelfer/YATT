@@ -15,29 +15,31 @@ import org.springframework.stereotype.Controller
 @Controller
 class ProjectMutationsController(val commandGateway: CommandGateway) {
 
-  @MutationMapping
-  fun createProject(
-      @Argument projectName: String,
-      @Argument plannedStartDate: LocalDate,
-      @Argument deadline: LocalDate,
-      @Argument companyId: CompanyId
-  ): CompletableFuture<ProjectId> =
-      commandGateway.send(
-          CreateProjectCommand(ProjectId(), projectName, plannedStartDate, deadline, companyId))
+    @MutationMapping
+    fun createProject(
+        @Argument projectName: String,
+        @Argument plannedStartDate: LocalDate,
+        @Argument deadline: LocalDate,
+        @Argument companyId: CompanyId
+    ): CompletableFuture<ProjectId> =
+        commandGateway.send(
+            CreateProjectCommand(ProjectId(), projectName, plannedStartDate, deadline, companyId)
+        )
 
-  @MutationMapping
-  fun renameProject(
-      @Argument identifier: ProjectId,
-      @Argument version: Long,
-      @Argument name: String
-  ): CompletableFuture<Long> = commandGateway.send(RenameProjectCommand(identifier, version, name))
+    @MutationMapping
+    fun renameProject(
+        @Argument identifier: ProjectId,
+        @Argument version: Long,
+        @Argument name: String
+    ): CompletableFuture<Long> =
+        commandGateway.send(RenameProjectCommand(identifier, version, name))
 
-  @MutationMapping
-  fun rescheduleProject(
-      @Argument identifier: ProjectId,
-      @Argument version: Long,
-      @Argument startDate: LocalDate,
-      @Argument deadline: LocalDate
-  ): CompletableFuture<Long> =
-      commandGateway.send(RescheduleProjectCommand(identifier, version, startDate, deadline))
+    @MutationMapping
+    fun rescheduleProject(
+        @Argument identifier: ProjectId,
+        @Argument version: Long,
+        @Argument startDate: LocalDate,
+        @Argument deadline: LocalDate
+    ): CompletableFuture<Long> =
+        commandGateway.send(RescheduleProjectCommand(identifier, version, startDate, deadline))
 }

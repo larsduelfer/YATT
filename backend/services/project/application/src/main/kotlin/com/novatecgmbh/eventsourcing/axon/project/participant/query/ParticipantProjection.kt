@@ -5,7 +5,7 @@ import com.novatecgmbh.eventsourcing.axon.project.participant.api.ParticipantId
 import com.novatecgmbh.eventsourcing.axon.project.participant.api.ParticipantQueryResult
 import com.novatecgmbh.eventsourcing.axon.project.project.api.ProjectId
 import com.novatecgmbh.eventsourcing.axon.user.api.UserId
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "participant")
@@ -27,16 +27,17 @@ class ParticipantProjection(
     var userEmail: String?,
     var userTelephone: String?,
 ) {
-  fun toQueryResult() =
-      ParticipantQueryResult(
-          identifier,
-          version,
-          projectId,
-          companyId,
-          companyName,
-          userId,
-          userFirstName,
-          userLastName,
-          userEmail,
-          userTelephone)
+    fun toQueryResult() =
+        ParticipantQueryResult(
+            identifier,
+            version,
+            projectId,
+            companyId,
+            companyName,
+            userId,
+            userFirstName,
+            userLastName,
+            userEmail,
+            userTelephone
+        )
 }

@@ -13,30 +13,31 @@ import org.springframework.stereotype.Controller
 @Controller
 class EmployeeMutationsController(val commandGateway: CommandGateway) {
 
-  @MutationMapping
-  fun createEmployee(
-      @Argument companyId: CompanyId,
-      @Argument userId: UserId
-  ): CompletableFuture<UUID> =
-      commandGateway.send(CreateEmployeeCommand(EmployeeId(), companyId, userId))
+    @MutationMapping
+    fun createEmployee(
+        @Argument companyId: CompanyId,
+        @Argument userId: UserId
+    ): CompletableFuture<UUID> =
+        commandGateway.send(CreateEmployeeCommand(EmployeeId(), companyId, userId))
 
-  @MutationMapping
-  fun grantProjectManagerPermissionToEmployee(
-      @Argument identifier: EmployeeId
-  ): CompletableFuture<Long> =
-      commandGateway.send(GrantProjectManagerPermissionToEmployee(identifier))
+    @MutationMapping
+    fun grantProjectManagerPermissionToEmployee(
+        @Argument identifier: EmployeeId
+    ): CompletableFuture<Long> =
+        commandGateway.send(GrantProjectManagerPermissionToEmployee(identifier))
 
-  @MutationMapping
-  fun removeProjectManagerPermissionFromEmployee(
-      @Argument identifier: EmployeeId
-  ): CompletableFuture<Long> =
-      commandGateway.send(RemoveProjectManagerPermissionFromEmployee(identifier))
+    @MutationMapping
+    fun removeProjectManagerPermissionFromEmployee(
+        @Argument identifier: EmployeeId
+    ): CompletableFuture<Long> =
+        commandGateway.send(RemoveProjectManagerPermissionFromEmployee(identifier))
 
-  @MutationMapping
-  fun grantAdminPermissionToEmployee(@Argument identifier: EmployeeId): CompletableFuture<Long> =
-      commandGateway.send(GrantAdminPermissionToEmployee(identifier))
+    @MutationMapping
+    fun grantAdminPermissionToEmployee(@Argument identifier: EmployeeId): CompletableFuture<Long> =
+        commandGateway.send(GrantAdminPermissionToEmployee(identifier))
 
-  @MutationMapping
-  fun removeAdminPermissionFromEmployee(@Argument identifier: EmployeeId): CompletableFuture<Long> =
-      commandGateway.send(RemoveAdminPermissionFromEmployee(identifier))
+    @MutationMapping
+    fun removeAdminPermissionFromEmployee(
+        @Argument identifier: EmployeeId
+    ): CompletableFuture<Long> = commandGateway.send(RemoveAdminPermissionFromEmployee(identifier))
 }

@@ -3,10 +3,10 @@ package com.novatecgmbh.eventsourcing.axon.project.task.query
 import com.novatecgmbh.eventsourcing.axon.project.participant.api.ParticipantId
 import com.novatecgmbh.eventsourcing.axon.project.project.api.ProjectId
 import com.novatecgmbh.eventsourcing.axon.project.task.api.*
+import jakarta.persistence.*
+import jakarta.persistence.FetchType.EAGER
 import java.io.Serializable
 import java.time.LocalDate
-import javax.persistence.*
-import javax.persistence.FetchType.EAGER
 
 @Entity
 @Table(name = "tasks")
@@ -42,20 +42,21 @@ class TaskProjection(
     )
     var todos: MutableList<Todo>
 ) {
-  fun toQueryResult() =
-      TaskQueryResult(
-          identifier,
-          projectId,
-          name,
-          description,
-          startDate,
-          endDate,
-          status,
-          participantId,
-          assigneeFirstName,
-          assigneeLastName,
-          assigneeCompanyName,
-          todos.map { it.toQueryResult() })
+    fun toQueryResult() =
+        TaskQueryResult(
+            identifier,
+            projectId,
+            name,
+            description,
+            startDate,
+            endDate,
+            status,
+            participantId,
+            assigneeFirstName,
+            assigneeLastName,
+            assigneeCompanyName,
+            todos.map { it.toQueryResult() }
+        )
 }
 
 @Embeddable
@@ -64,5 +65,5 @@ data class Todo(
     @Column(nullable = false) val description: String,
     @Column(nullable = false) var isDone: Boolean
 ) : Serializable {
-  fun toQueryResult() = TodoQueryResult(todoId, description, isDone)
+    fun toQueryResult() = TodoQueryResult(todoId, description, isDone)
 }

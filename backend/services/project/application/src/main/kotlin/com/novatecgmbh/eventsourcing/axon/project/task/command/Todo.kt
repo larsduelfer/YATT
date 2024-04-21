@@ -12,30 +12,31 @@ import org.axonframework.modelling.command.EntityId
 import org.axonframework.modelling.command.inspection.AnnotatedAggregate
 
 class Todo(entityIdentifier: TodoId, private var description: String, isDone: Boolean) {
-  @EntityId(routingKey = "todoId")
-  internal var entityIdentifier: TodoId = entityIdentifier
-    private set
+    @EntityId(routingKey = "todoId")
+    internal var entityIdentifier: TodoId = entityIdentifier
+        private set
 
-  internal var isDone: Boolean = isDone
-    private set
+    internal var isDone: Boolean = isDone
+        private set
 
-  @CommandHandler
-  fun handle(command: MarkTodoAsDoneCommand): Long {
-    if (!isDone) {
-      // TODO rootContextId
-      Scope.getCurrentScope<AnnotatedAggregate<Task>>().execute {
-        AggregateLifecycle.apply(
-            TodoMarkedAsDoneEvent(command.identifier, command.todoId),
-            MetaData(mapOf("rootContextId" to it.getRootContextId())))
-      }
+    @CommandHandler
+    fun handle(command: MarkTodoAsDoneCommand): Long {
+        if (!isDone) {
+            // TODO rootContextId
+            Scope.getCurrentScope<AnnotatedAggregate<Task>>().execute {
+                AggregateLifecycle.apply(
+                    TodoMarkedAsDoneEvent(command.identifier, command.todoId),
+                    MetaData(mapOf("rootContextId" to it.getRootContextId()))
+                )
+            }
+        }
+        return AggregateLifecycle.getVersion()
     }
-    return AggregateLifecycle.getVersion()
-  }
 
-  @EventSourcingHandler
-  fun on(event: TodoMarkedAsDoneEvent) {
-    if (event.todoId == entityIdentifier) {
-      isDone = true
+    @EventSourcingHandler
+    fun on(event: TodoMarkedAsDoneEvent) {
+        if (event.todoId == entityIdentifier) {
+            isDone = true
+        }
     }
-  }
 }

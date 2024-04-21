@@ -6,5 +6,5 @@ import org.springframework.boot.runApplication
 @SpringBootApplication class RsocketApi
 
 fun main(args: Array<String>) {
-  runApplication<RsocketApi>(*args)
+    runApplication<RsocketApi>(*args)
 }

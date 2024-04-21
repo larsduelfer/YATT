@@ -33,3 +33,8 @@ logging:
       axonframework.eventhandling.pooled.Coordinator: info
       flywaydb.core.internal.command: info
       springframework.boot: info
+
+axon:
+  extension:
+    tracing:
+      enabled: true

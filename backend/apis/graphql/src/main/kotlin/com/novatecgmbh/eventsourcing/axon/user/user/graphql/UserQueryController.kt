@@ -16,16 +16,16 @@ import org.springframework.stereotype.Controller
 @Controller
 class UserQueryController(val queryGateway: QueryGateway) {
 
-  @QueryMapping
-  fun users(): CompletableFuture<List<UserQueryResult>> = queryGateway.queryMany(AllUsersQuery())
+    @QueryMapping
+    fun users(): CompletableFuture<List<UserQueryResult>> = queryGateway.queryMany(AllUsersQuery())
 
-  // TODO: Change to BatchMapping to be more efficient
-  @SchemaMapping(typeName = "Participant")
-  fun user(participant: ParticipantQueryResult): CompletableFuture<UserQueryResult> =
-      queryGateway.query(UserQuery(participant.userId))
+    // TODO: Change to BatchMapping to be more efficient
+    @SchemaMapping(typeName = "Participant")
+    fun user(participant: ParticipantQueryResult): CompletableFuture<UserQueryResult> =
+        queryGateway.query(UserQuery(participant.userId))
 
-  // TODO: Change to BatchMapping to be more efficient
-  @SchemaMapping(typeName = "Employee")
-  fun user(employee: EmployeeQueryResult): CompletableFuture<UserQueryResult> =
-      queryGateway.query(UserQuery(employee.userId))
+    // TODO: Change to BatchMapping to be more efficient
+    @SchemaMapping(typeName = "Employee")
+    fun user(employee: EmployeeQueryResult): CompletableFuture<UserQueryResult> =
+        queryGateway.query(UserQuery(employee.userId))
 }

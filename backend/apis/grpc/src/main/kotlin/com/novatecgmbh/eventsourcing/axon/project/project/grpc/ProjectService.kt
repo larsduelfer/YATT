@@ -16,26 +16,29 @@ import org.axonframework.queryhandling.QueryGateway
 @GrpcService
 class ProjectService(val queryGateway: QueryGateway) : ProjectServiceGrpc.ProjectServiceImplBase() {
 
-  override fun findMyProjects(request: Empty, responseObserver: StreamObserver<ProjectList>) {
-    val user = SecurityContextHelper.getUser()!!
-    queryGateway.queryMany<ProjectQueryResult, MyProjectsQuery>(MyProjectsQuery(user)).thenApply {
-      it.map { it.toProjectProto() }.apply {
-        ProjectList.newBuilder().addAllProjects(this).build().apply {
-          responseObserver.onNext(this)
-          responseObserver.onCompleted()
-        }
-      }
+    override fun findMyProjects(request: Empty, responseObserver: StreamObserver<ProjectList>) {
+        val user = SecurityContextHelper.getUser()!!
+        queryGateway
+            .queryMany<ProjectQueryResult, MyProjectsQuery>(MyProjectsQuery(user))
+            .thenApply {
+                it.map { it.toProjectProto() }
+                    .apply {
+                        ProjectList.newBuilder().addAllProjects(this).build().apply {
+                            responseObserver.onNext(this)
+                            responseObserver.onCompleted()
+                        }
+                    }
+            }
     }
-  }
 
-  private fun ProjectQueryResult.toProjectProto(): Project =
-      Project.newBuilder()
-          .also {
-            it.identifier = identifier.toString()
-            it.name = name
-            it.startDate = startDate.toTimestamp()
-            it.deadline = deadline.toTimestamp()
-            if (actualEndDate != null) it.actualEndDate = actualEndDate!!.toTimestamp()
-          }
-          .build()
+    private fun ProjectQueryResult.toProjectProto(): Project =
+        Project.newBuilder()
+            .also {
+                it.identifier = identifier.toString()
+                it.name = name
+                it.startDate = startDate.toTimestamp()
+                it.deadline = deadline.toTimestamp()
+                if (actualEndDate != null) it.actualEndDate = actualEndDate!!.toTimestamp()
+            }
+            .build()
 }

@@ -18,17 +18,18 @@ import org.springframework.stereotype.Controller
 @Controller
 class CompanyQueryController(val queryGateway: QueryGateway) {
 
-  @QueryMapping
-  fun company(@Argument identifier: CompanyId): CompletableFuture<CompanyQueryResult?> =
-      queryGateway.queryOptional<CompanyQueryResult, CompanyQuery>(CompanyQuery(identifier))
-          .thenApply { optional -> optional.orElse(null) }
+    @QueryMapping
+    fun company(@Argument identifier: CompanyId): CompletableFuture<CompanyQueryResult?> =
+        queryGateway
+            .queryOptional<CompanyQueryResult, CompanyQuery>(CompanyQuery(identifier))
+            .thenApply { optional -> optional.orElse(null) }
 
-  // TODO: Change to BatchMapping to be more efficient
-  @SchemaMapping(typeName = "Participant")
-  fun company(participant: ParticipantQueryResult): CompletableFuture<CompanyQueryResult> =
-      queryGateway.let { queryGateway.query(CompanyQuery(participant.companyId)) }
+    // TODO: Change to BatchMapping to be more efficient
+    @SchemaMapping(typeName = "Participant")
+    fun company(participant: ParticipantQueryResult): CompletableFuture<CompanyQueryResult> =
+        queryGateway.let { queryGateway.query(CompanyQuery(participant.companyId)) }
 
-  @QueryMapping
-  fun companies(): CompletableFuture<List<CompanyQueryResult>> =
-      queryGateway.queryMany(AllCompaniesQuery())
+    @QueryMapping
+    fun companies(): CompletableFuture<List<CompanyQueryResult>> =
+        queryGateway.queryMany(AllCompaniesQuery())
 }

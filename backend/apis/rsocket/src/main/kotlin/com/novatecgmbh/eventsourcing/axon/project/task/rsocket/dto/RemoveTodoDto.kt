@@ -5,5 +5,5 @@ import com.novatecgmbh.eventsourcing.axon.project.task.api.TaskId
 import com.novatecgmbh.eventsourcing.axon.project.task.api.TodoId
 
 data class RemoveTodoDto(val taskId: TaskId, val todoId: TodoId) {
-  fun toCommand() = RemoveTodoCommand(identifier = taskId, todoId = todoId)
+    fun toCommand() = RemoveTodoCommand(identifier = taskId, todoId = todoId)
 }

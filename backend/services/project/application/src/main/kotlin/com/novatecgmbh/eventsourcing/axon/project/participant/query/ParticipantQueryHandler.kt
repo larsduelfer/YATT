@@ -17,31 +17,33 @@ class ParticipantQueryHandler(
     private val authService: ProjectAuthorizationService
 ) {
 
-  @QueryHandler
-  fun handle(
-      query: ParticipantQuery,
-      @AuditUserId userId: String
-  ): Optional<ParticipantQueryResult> =
-      repository.findById(query.participantId).map { it.toQueryResult() }?.let {
-        authService.runWhenAuthorizedForProject(UserId(userId), it.get().projectId) { it }
-      }
-          ?: Optional.empty()
+    @QueryHandler
+    fun handle(
+        query: ParticipantQuery,
+        @AuditUserId userId: String
+    ): Optional<ParticipantQueryResult> =
+        repository
+            .findById(query.participantId)
+            .map { it.toQueryResult() }
+            ?.let {
+                authService.runWhenAuthorizedForProject(UserId(userId), it.get().projectId) { it }
+            } ?: Optional.empty()
 
-  @QueryHandler
-  fun handle(
-      query: ParticipantByProjectQuery,
-      @AuditUserId userId: String
-  ): Iterable<ParticipantQueryResult> =
-      authService.runWhenAuthorizedForProject(UserId(userId), query.projectId) {
-        repository.findAllByProjectId(query.projectId).map { it.toQueryResult() }
-      }
+    @QueryHandler
+    fun handle(
+        query: ParticipantByProjectQuery,
+        @AuditUserId userId: String
+    ): Iterable<ParticipantQueryResult> =
+        authService.runWhenAuthorizedForProject(UserId(userId), query.projectId) {
+            repository.findAllByProjectId(query.projectId).map { it.toQueryResult() }
+        }
 
-  @QueryHandler
-  fun handle(
-      query: ParticipantByMultipleProjectsQuery,
-      @AuditUserId userId: String
-  ): Iterable<ParticipantQueryResult> =
-      authService.runWhenAuthorizedForAllProjects(UserId(userId), query.projectIds) {
-        repository.findAllByProjectIdIn(query.projectIds).map { it.toQueryResult() }
-      }
+    @QueryHandler
+    fun handle(
+        query: ParticipantByMultipleProjectsQuery,
+        @AuditUserId userId: String
+    ): Iterable<ParticipantQueryResult> =
+        authService.runWhenAuthorizedForAllProjects(UserId(userId), query.projectIds) {
+            repository.findAllByProjectIdIn(query.projectIds).map { it.toQueryResult() }
+        }
 }

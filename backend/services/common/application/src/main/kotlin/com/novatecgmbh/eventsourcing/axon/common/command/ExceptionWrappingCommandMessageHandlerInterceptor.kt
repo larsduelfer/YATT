@@ -14,31 +14,31 @@ import org.slf4j.LoggerFactory
 class ExceptionWrappingCommandMessageHandlerInterceptor :
     MessageHandlerInterceptor<CommandMessage<*>?> {
 
-  @Throws(Exception::class)
-  override fun handle(
-      unitOfWork: UnitOfWork<out CommandMessage<*>>,
-      interceptorChain: InterceptorChain
-  ): Any? =
-      try {
-        interceptorChain.proceed()
-      } catch (e: Throwable) {
-        throw CommandExecutionException(e.message, e, exceptionDetails(e))
-      }
+    @Throws(Exception::class)
+    override fun handle(
+        unitOfWork: UnitOfWork<out CommandMessage<*>>,
+        interceptorChain: InterceptorChain
+    ): Any? =
+        try {
+            interceptorChain.proceed()
+        } catch (e: Throwable) {
+            throw CommandExecutionException(e.message, e, exceptionDetails(e))
+        }
 
-  private fun exceptionDetails(throwable: Throwable) =
-      when (throwable) {
-        is AggregateNotFoundException -> NOT_FOUND
-        is AlreadyExistsException -> ALREADY_EXISTS
-        is ConflictingAggregateVersionException -> CONCURRENT_MODIFICATION
-        is IllegalArgumentException -> ILLEGAL_ARGUMENT
-        is IllegalStateException -> ILLEGAL_STATE
-        is IllegalAccessException -> ACCESS_DENIED
-        is PreconditionFailedException -> PRECONDITION_FAILED
-        else -> UNKNOWN
-      }.also { LOGGER.info("Mapped ${throwable::class} to status code $it") }
+    private fun exceptionDetails(throwable: Throwable) =
+        when (throwable) {
+            is AggregateNotFoundException -> NOT_FOUND
+            is AlreadyExistsException -> ALREADY_EXISTS
+            is ConflictingAggregateVersionException -> CONCURRENT_MODIFICATION
+            is IllegalArgumentException -> ILLEGAL_ARGUMENT
+            is IllegalStateException -> ILLEGAL_STATE
+            is IllegalAccessException -> ACCESS_DENIED
+            is PreconditionFailedException -> PRECONDITION_FAILED
+            else -> UNKNOWN
+        }.also { LOGGER.info("Mapped ${throwable::class} to status code $it") }
 
-  companion object {
-    val LOGGER: Logger =
-        LoggerFactory.getLogger(ExceptionWrappingCommandMessageHandlerInterceptor::class.java)
-  }
+    companion object {
+        val LOGGER: Logger =
+            LoggerFactory.getLogger(ExceptionWrappingCommandMessageHandlerInterceptor::class.java)
+    }
 }

@@ -13,9 +13,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQL10Dialect
     open-in-view: false
   sql:
     init:
@@ -31,9 +28,12 @@ logging:
       springframework.boot: info
 
 axon:
-  serializer:
-    events: jackson
   eventhandling:
     processors:
       employee-unique-key-projector:
         mode: subscribing
+  extension:
+    tracing:
+      enabled: true
+  serializer:
+    events: jackson

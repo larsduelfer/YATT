@@ -8,3 +8,6 @@ spring:
 axon:
   axonserver:
     enabled: false
+  extension:
+    tracing:
+      enabled: false

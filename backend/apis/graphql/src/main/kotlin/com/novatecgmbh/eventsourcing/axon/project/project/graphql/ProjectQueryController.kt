@@ -21,32 +21,35 @@ import reactor.core.publisher.Flux
 @Controller
 class ProjectQueryController(val queryGateway: QueryGateway) {
 
-  @QueryMapping
-  fun project(@Argument identifier: ProjectId): CompletableFuture<ProjectQueryResult?> =
-      queryGateway.queryOptional<ProjectQueryResult, ProjectQuery>(ProjectQuery(identifier))
-          .thenApply { optional -> optional.orElse(null) }
+    @QueryMapping
+    fun project(@Argument identifier: ProjectId): CompletableFuture<ProjectQueryResult?> =
+        queryGateway
+            .queryOptional<ProjectQueryResult, ProjectQuery>(ProjectQuery(identifier))
+            .thenApply { optional -> optional.orElse(null) }
 
-  @QueryMapping
-  fun projects(
-      @AuthenticationPrincipal user: UsernamePasswordAuthenticationToken
-  ): CompletableFuture<List<ProjectQueryResult>> =
-      queryGateway.queryMany(
-          MyProjectsQuery((user.principal as RegisteredUserPrincipal).identifier))
+    @QueryMapping
+    fun projects(
+        @AuthenticationPrincipal user: UsernamePasswordAuthenticationToken
+    ): CompletableFuture<List<ProjectQueryResult>> =
+        queryGateway.queryMany(
+            MyProjectsQuery((user.principal as RegisteredUserPrincipal).identifier)
+        )
 
-  @SubscriptionMapping("projects")
-  fun projectsAndUpdates(
-      @AuthenticationPrincipal user: UsernamePasswordAuthenticationToken
-  ): Flux<ProjectQueryResult> {
-    val query =
-        queryGateway.subscriptionQuery(
-            MyProjectsQuery((user.principal as RegisteredUserPrincipal).identifier),
-            ResponseTypes.multipleInstancesOf(ProjectQueryResult::class.java),
-            ResponseTypes.instanceOf(ProjectQueryResult::class.java))
+    @SubscriptionMapping("projects")
+    fun projectsAndUpdates(
+        @AuthenticationPrincipal user: UsernamePasswordAuthenticationToken
+    ): Flux<ProjectQueryResult> {
+        val query =
+            queryGateway.subscriptionQuery(
+                MyProjectsQuery((user.principal as RegisteredUserPrincipal).identifier),
+                ResponseTypes.multipleInstancesOf(ProjectQueryResult::class.java),
+                ResponseTypes.instanceOf(ProjectQueryResult::class.java)
+            )
 
-    return query
-        .initialResult()
-        .flatMapMany { Flux.fromIterable(it) }
-        .concatWith(query.updates())
-        .doFinally { query.cancel() }
-  }
+        return query
+            .initialResult()
+            .flatMapMany { Flux.fromIterable(it) }
+            .concatWith(query.updates())
+            .doFinally { query.cancel() }
+    }
 }

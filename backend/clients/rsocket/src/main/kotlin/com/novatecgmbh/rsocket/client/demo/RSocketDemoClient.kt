@@ -10,5 +10,5 @@ import org.springframework.boot.runApplication
 class RSocketDemoClient
 
 fun main(args: Array<String>) {
-  runApplication<RSocketDemoClient>(*args)
+    runApplication<RSocketDemoClient>(*args)
 }

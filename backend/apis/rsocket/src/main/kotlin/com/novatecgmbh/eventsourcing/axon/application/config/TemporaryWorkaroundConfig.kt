@@ -9,20 +9,20 @@ import reactor.core.publisher.Hooks
 
 @Configuration
 class TemporaryWorkaroundConfig {
-  // source: https://github.com/rsocket/rsocket-java/issues/1018#issuecomment-954459392
-  // workaround for: https://github.com/rsocket/rsocket-java/issues/1018
-  @Autowired
-  fun configureHooks() {
-    Hooks.onErrorDropped {
-      if (it is CancellationException || it.cause is CancellationException) {
-        LOGGER.trace("Operator called default onErrorDropped", it)
-      } else {
-        LOGGER.error("Operator called default onErrorDropped", it)
-      }
+    // source: https://github.com/rsocket/rsocket-java/issues/1018#issuecomment-954459392
+    // workaround for: https://github.com/rsocket/rsocket-java/issues/1018
+    @Autowired
+    fun configureHooks() {
+        Hooks.onErrorDropped {
+            if (it is CancellationException || it.cause is CancellationException) {
+                LOGGER.trace("Operator called default onErrorDropped", it)
+            } else {
+                LOGGER.error("Operator called default onErrorDropped", it)
+            }
+        }
     }
-  }
 
-  companion object {
-    val LOGGER: Logger = LoggerFactory.getLogger(TemporaryWorkaroundConfig::class.java)
-  }
+    companion object {
+        val LOGGER: Logger = LoggerFactory.getLogger(TemporaryWorkaroundConfig::class.java)
+    }
 }

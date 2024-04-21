@@ -5,5 +5,6 @@ import com.novatecgmbh.eventsourcing.axon.project.task.api.TaskId
 import com.novatecgmbh.eventsourcing.axon.project.task.api.TodoId
 
 data class AddTodoDto(val taskId: TaskId, val todoId: TodoId = TodoId(), val description: String) {
-  fun toCommand() = AddTodoCommand(identifier = taskId, todoId = todoId, description = description)
+    fun toCommand() =
+        AddTodoCommand(identifier = taskId, todoId = todoId, description = description)
 }

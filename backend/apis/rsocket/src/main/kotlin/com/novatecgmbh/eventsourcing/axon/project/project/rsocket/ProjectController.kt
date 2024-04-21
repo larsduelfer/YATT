@@ -21,51 +21,54 @@ class ProjectController(
     val commandGateway: ReactorCommandGateway
 ) {
 
-  @MessageMapping("projects.create")
-  fun createProject(data: CreateProjectDto): Mono<ProjectId> = commandGateway.send(data.toCommand())
+    @MessageMapping("projects.create")
+    fun createProject(data: CreateProjectDto): Mono<ProjectId> =
+        commandGateway.send(data.toCommand())
 
-  @MessageMapping("projects.rename")
-  fun renameProject(data: RenameProjectDto): Mono<Unit> = commandGateway.send(data.toCommand())
+    @MessageMapping("projects.rename")
+    fun renameProject(data: RenameProjectDto): Mono<Unit> = commandGateway.send(data.toCommand())
 
-  @MessageMapping("projects.reschedule")
-  fun rescheduleProject(data: RescheduleProjectDto): Mono<Unit> =
-      commandGateway.send(data.toCommand())
+    @MessageMapping("projects.reschedule")
+    fun rescheduleProject(data: RescheduleProjectDto): Mono<Unit> =
+        commandGateway.send(data.toCommand())
 
-  @MessageMapping("projects.get")
-  fun getMyProjects(
-      @AuthenticationPrincipal user: RegisteredUserProfile
-  ): Mono<List<ProjectQueryResult>> =
-      queryGateway.query(
-          MyProjectsQuery(user.identifier),
-          ResponseTypes.multipleInstancesOf(ProjectQueryResult::class.java))
+    @MessageMapping("projects.get")
+    fun getMyProjects(
+        @AuthenticationPrincipal user: RegisteredUserProfile
+    ): Mono<List<ProjectQueryResult>> =
+        queryGateway.query(
+            MyProjectsQuery(user.identifier),
+            ResponseTypes.multipleInstancesOf(ProjectQueryResult::class.java)
+        )
 
-  @MessageMapping("projects.get")
-  fun getMyProjectsAsStream(
-      @AuthenticationPrincipal user: RegisteredUserProfile
-  ): Flux<ProjectQueryResult> =
-      queryGateway
-          .query(
-              MyProjectsQuery(user.identifier),
-              ResponseTypes.multipleInstancesOf(ProjectQueryResult::class.java))
-          .flatMapIterable { list -> list }
+    @MessageMapping("projects.get")
+    fun getMyProjectsAsStream(
+        @AuthenticationPrincipal user: RegisteredUserProfile
+    ): Flux<ProjectQueryResult> =
+        queryGateway
+            .query(
+                MyProjectsQuery(user.identifier),
+                ResponseTypes.multipleInstancesOf(ProjectQueryResult::class.java)
+            )
+            .flatMapIterable { list -> list }
 
-  @MessageMapping("projects.updates")
-  fun subscribeMyProjectUpdates(
-      @AuthenticationPrincipal user: RegisteredUserProfile
-  ): Flux<ProjectQueryResult> =
-      queryGateway.queryUpdates(MyProjectsQuery(user.identifier), ProjectQueryResult::class.java)
+    @MessageMapping("projects.updates")
+    fun subscribeMyProjectUpdates(
+        @AuthenticationPrincipal user: RegisteredUserProfile
+    ): Flux<ProjectQueryResult> =
+        queryGateway.queryUpdates(MyProjectsQuery(user.identifier), ProjectQueryResult::class.java)
 
-  @MessageMapping("projects.{id}")
-  fun getProject(@DestinationVariable id: ProjectId): Mono<ProjectQueryResult> =
-      queryGateway.query(ProjectQuery(id), ProjectQueryResult::class.java)
+    @MessageMapping("projects.{id}")
+    fun getProject(@DestinationVariable id: ProjectId): Mono<ProjectQueryResult> =
+        queryGateway.query(ProjectQuery(id), ProjectQueryResult::class.java)
 
-  @MessageMapping("projects.{id}.updates")
-  fun subscribeProjectByIdUpdates(@DestinationVariable id: ProjectId): Flux<ProjectQueryResult> =
-      queryGateway.queryUpdates(ProjectQuery(id), ProjectQueryResult::class.java)
+    @MessageMapping("projects.{id}.updates")
+    fun subscribeProjectByIdUpdates(@DestinationVariable id: ProjectId): Flux<ProjectQueryResult> =
+        queryGateway.queryUpdates(ProjectQuery(id), ProjectQueryResult::class.java)
 
-  @MessageMapping("projects.{id}.details.updates")
-  fun subscribeProjectDetailsByIdUpdates(
-      @DestinationVariable id: ProjectId
-  ): Flux<ProjectDetailsQueryResult> =
-      queryGateway.queryUpdates(ProjectDetailsQuery(id), ProjectDetailsQueryResult::class.java)
+    @MessageMapping("projects.{id}.details.updates")
+    fun subscribeProjectDetailsByIdUpdates(
+        @DestinationVariable id: ProjectId
+    ): Flux<ProjectDetailsQueryResult> =
+        queryGateway.queryUpdates(ProjectDetailsQuery(id), ProjectDetailsQueryResult::class.java)
 }

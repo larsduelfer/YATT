@@ -6,5 +6,5 @@ import com.novatecgmbh.eventsourcing.axon.company.employee.api.EmployeeId
 import com.novatecgmbh.eventsourcing.axon.user.api.UserId
 
 data class CreateEmployeeDto(val companyId: CompanyId, val userId: UserId) {
-  fun toCommand(identifier: EmployeeId) = CreateEmployeeCommand(identifier, companyId, userId)
+    fun toCommand(identifier: EmployeeId) = CreateEmployeeCommand(identifier, companyId, userId)
 }

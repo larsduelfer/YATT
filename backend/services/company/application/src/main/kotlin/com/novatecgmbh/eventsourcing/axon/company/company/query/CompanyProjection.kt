@@ -2,10 +2,10 @@ package com.novatecgmbh.eventsourcing.axon.company.company.query
 
 import com.novatecgmbh.eventsourcing.axon.company.company.api.CompanyId
 import com.novatecgmbh.eventsourcing.axon.company.company.api.CompanyQueryResult
-import javax.persistence.Column
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.Table
+import jakarta.persistence.Column
+import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Entity
+import jakarta.persistence.Table
 
 @Entity
 @Table(name = "company")
@@ -14,5 +14,5 @@ class CompanyProjection(
     @Column(nullable = false) var version: Long,
     @Column(nullable = false) var name: String
 ) {
-  fun toQueryResult() = CompanyQueryResult(identifier, version, name)
+    fun toQueryResult() = CompanyQueryResult(identifier, version, name)
 }

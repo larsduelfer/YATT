@@ -18,40 +18,42 @@ import reactor.core.publisher.Mono
 @Component
 class UserProfileAuthenticationConverter(val queryGateway: QueryGateway) :
     Converter<Jwt, Mono<AbstractAuthenticationToken>> {
-  private val converter = JwtAuthenticationConverter()
+    private val converter = JwtAuthenticationConverter()
 
-  override fun convert(source: Jwt): Mono<AbstractAuthenticationToken> {
-    val token = converter.convert(source) as JwtAuthenticationToken?
-    val externalUserId: String = source.getClaim("sub")
+    override fun convert(source: Jwt): Mono<AbstractAuthenticationToken> {
+        val token = converter.convert(source) as JwtAuthenticationToken?
+        val externalUserId: String = source.getClaim("sub")
 
-    val user =
-        queryGateway
-            .queryOptional<UserQueryResult, FindUserByExternalUserIdQuery>(
-                FindUserByExternalUserIdQuery(externalUserId))
-            .join()
+        val user =
+            queryGateway
+                .queryOptional<UserQueryResult, FindUserByExternalUserIdQuery>(
+                    FindUserByExternalUserIdQuery(externalUserId)
+                )
+                .join()
 
-    return if (token != null) {
-      Mono.just(
-          UserProfileAuthentication(
-              token,
-              user
-                  .map { it.toRegisteredUserProfile() as UserProfile }
-                  .orElse(UnregisteredUserProfile(externalUserId))),
-      )
-    } else {
-      Mono.error { RuntimeException("JwtAuthenticationToken is null") }
+        return if (token != null) {
+            Mono.just(
+                UserProfileAuthentication(
+                    token,
+                    user
+                        .map { it.toRegisteredUserProfile() as UserProfile }
+                        .orElse(UnregisteredUserProfile(externalUserId))
+                ),
+            )
+        } else {
+            Mono.error { RuntimeException("JwtAuthenticationToken is null") }
+        }
     }
-  }
 
-  internal class UserProfileAuthentication(
-      token: JwtAuthenticationToken,
-      private val userProfile: UserProfile
-  ) : JwtAuthenticationToken(token.token, token.authorities) {
+    internal class UserProfileAuthentication(
+        token: JwtAuthenticationToken,
+        private val userProfile: UserProfile
+    ) : JwtAuthenticationToken(token.token, token.authorities) {
 
-    override fun getPrincipal(): UserProfile {
-      return userProfile
+        override fun getPrincipal(): UserProfile {
+            return userProfile
+        }
     }
-  }
 }
 
 fun UserQueryResult.toRegisteredUserProfile() =
