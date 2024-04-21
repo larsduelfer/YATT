@@ -42,31 +42,31 @@ jobs:
 
       - name: Build services common api
         working-directory: ./backend
-        run: ./gradlew :common:api:build
+        run: ./gradlew :services:common:api:build
       - name: Build services common application
         working-directory: ./backend
-        run: ./gradlew :common:application:build
+        run: ./gradlew :services:common:application:build
       
       - name: Build services user api
         working-directory: ./backend
-        run: ./gradlew :user:api:build
+        run: ./gradlew :services:user:api:build
       - name: Build services user application
         working-directory: ./backend
-        run: ./gradlew :user:application:build
+        run: ./gradlew :services:user:application:build
       
       - name: Build services company api
         working-directory: ./backend
-        run: ./gradlew :company:api:build
+        run: ./gradlew :services:company:api:build
       - name: Build services company application
         working-directory: ./backend
-        run: ./gradlew :company:application:build
+        run: ./gradlew :services:company:application:build
       
       - name: Build services project api
         working-directory: ./backend
-        run: ./gradlew :project:api:build
+        run: ./gradlew :services:project:api:build
       - name: Build services project application
         working-directory: ./backend
-        run: ./gradlew :project:application:build
+        run: ./gradlew :services:project:application:build
 
       - name: Build demo client for gRPC API
         working-directory: ./backend
