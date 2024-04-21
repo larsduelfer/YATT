@@ -2,7 +2,7 @@ import com.google.protobuf.gradle.*
 
 plugins {
   id("com.google.protobuf") version "0.8.18"
-  id("com.novatecgmbh.commons-kotlin")
+  id("yatt.kotlin-conventions")
 }
 
 group = "${group}.apis"

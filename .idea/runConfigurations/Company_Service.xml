@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Company Service" type="JetRunConfigurationType">
     <option name="MAIN_CLASS_NAME" value="com.novatecgmbh.eventsourcing.axon.CompanyApplicationKt" />
-    <module name="company.application.main" />
+    <module name="backend.services.company.application.main" />
     <shortenClasspath name="NONE" />
     <method v="2">
       <option name="Make" enabled="true" />

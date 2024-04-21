@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="API - GraphQL" type="JetRunConfigurationType">
     <option name="MAIN_CLASS_NAME" value="com.novatecgmbh.eventsourcing.axon.GraphQlApiKt" />
-    <module name="apis.graphql.main" />
+    <module name="backend.apis.graphql.main" />
     <shortenClasspath name="NONE" />
     <method v="2">
       <option name="Make" enabled="true" />

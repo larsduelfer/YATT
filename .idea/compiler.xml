@@ -31,9 +31,27 @@
       <module name="api.common" target="11" />
       <module name="apis.api-common.main" target="11" />
       <module name="apis.api-common.test" target="11" />
+      <module name="apis.common" target="17" />
+      <module name="apis.common.main" target="17" />
+      <module name="apis.common.test" target="17" />
+      <module name="apis.graphql" target="17" />
       <module name="apis.graphql-websocket" target="11" />
       <module name="apis.graphql-websocket.main" target="11" />
       <module name="apis.graphql-websocket.test" target="11" />
+      <module name="apis.graphql.main" target="17" />
+      <module name="apis.graphql.test" target="17" />
+      <module name="apis.grpc" target="17" />
+      <module name="apis.grpc-lib" target="17" />
+      <module name="apis.grpc-lib.main" target="17" />
+      <module name="apis.grpc-lib.test" target="17" />
+      <module name="apis.grpc.main" target="17" />
+      <module name="apis.grpc.test" target="17" />
+      <module name="apis.rest" target="17" />
+      <module name="apis.rest.main" target="17" />
+      <module name="apis.rest.test" target="17" />
+      <module name="apis.rsocket" target="17" />
+      <module name="apis.rsocket.main" target="17" />
+      <module name="apis.rsocket.test" target="17" />
       <module name="apis.stomp" target="11" />
       <module name="apis.stomp.main" target="11" />
       <module name="apis.stomp.test" target="11" />
@@ -49,6 +67,15 @@
       <module name="backend.common-spring-webmvc.test" target="11" />
       <module name="backend.common-webmvc.main" target="11" />
       <module name="backend.common-webmvc.test" target="11" />
+      <module name="build-logic.commons-kotlin" target="17" />
+      <module name="build-logic.commons-kotlin.main" target="17" />
+      <module name="build-logic.commons-kotlin.test" target="17" />
+      <module name="clients.grpc" target="17" />
+      <module name="clients.grpc.main" target="17" />
+      <module name="clients.grpc.test" target="17" />
+      <module name="clients.rsocket" target="17" />
+      <module name="clients.rsocket.main" target="17" />
+      <module name="clients.rsocket.test" target="17" />
       <module name="com.novatecgmbh.eventsourcing.axon.api-gateway.graphql.main" target="11" />
       <module name="com.novatecgmbh.eventsourcing.axon.api-gateway.graphql.test" target="11" />
       <module name="com.novatecgmbh.eventsourcing.axon.common.common.api.main" target="11" />
@@ -75,12 +102,27 @@
       <module name="com.novatecgmbh.eventsourcing.axon.user.user.application.test" target="11" />
       <module name="com.novatecgmbh.eventsourcing.axon.user.user.command-query.main" target="11" />
       <module name="com.novatecgmbh.eventsourcing.axon.user.user.command-query.test" target="11" />
+      <module name="common.api" target="17" />
+      <module name="common.api.main" target="17" />
+      <module name="common.api.test" target="17" />
+      <module name="common.application" target="17" />
+      <module name="common.application.main" target="17" />
+      <module name="common.application.test" target="17" />
+      <module name="common.auditing" target="17" />
+      <module name="common.auditing.main" target="17" />
+      <module name="common.auditing.test" target="17" />
       <module name="common.command-query.main" target="11" />
       <module name="common.command-query.test" target="11" />
       <module name="common.web.main" target="11" />
       <module name="common.web.test" target="11" />
+      <module name="company.api" target="17" />
+      <module name="company.api.main" target="17" />
+      <module name="company.api.test" target="17" />
+      <module name="company.application" target="17" />
       <module name="company.application-without-web.main" target="11" />
       <module name="company.application-without-web.test" target="11" />
+      <module name="company.application.main" target="17" />
+      <module name="company.application.test" target="17" />
       <module name="company.command-query" target="11" />
       <module name="company.command-query.main" target="11" />
       <module name="company.command-query.test" target="11" />
@@ -90,8 +132,17 @@
       <module name="company.web" target="11" />
       <module name="company.web.main" target="11" />
       <module name="company.web.test" target="11" />
+      <module name="data-import.initial" target="17" />
+      <module name="data-import.initial.main" target="17" />
+      <module name="data-import.initial.test" target="17" />
+      <module name="project.api" target="17" />
+      <module name="project.api.main" target="17" />
+      <module name="project.api.test" target="17" />
+      <module name="project.application" target="17" />
       <module name="project.application-without-web.main" target="11" />
       <module name="project.application-without-web.test" target="11" />
+      <module name="project.application.main" target="17" />
+      <module name="project.application.test" target="17" />
       <module name="project.command-query" target="11" />
       <module name="project.command-query.main" target="11" />
       <module name="project.command-query.test" target="11" />
@@ -101,8 +152,14 @@
       <module name="project.web" target="11" />
       <module name="project.web.main" target="11" />
       <module name="project.web.test" target="11" />
+      <module name="user.api" target="17" />
+      <module name="user.api.main" target="17" />
+      <module name="user.api.test" target="17" />
+      <module name="user.application" target="17" />
       <module name="user.application-without-web.main" target="11" />
       <module name="user.application-without-web.test" target="11" />
+      <module name="user.application.main" target="17" />
+      <module name="user.application.test" target="17" />
       <module name="user.command-query.main" target="11" />
       <module name="user.command-query.test" target="11" />
       <module name="user.web" target="11" />

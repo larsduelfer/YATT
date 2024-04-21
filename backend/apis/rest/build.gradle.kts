@@ -1,5 +1,5 @@
 plugins {
-  id("com.novatecgmbh.commons-kotlin")
+  id("yatt.kotlin-conventions")
   id("io.spring.dependency-management")
   kotlin("plugin.spring")
 }
@@ -7,7 +7,7 @@ plugins {
 group = "${group}.apis"
 
 dependencies {
-  implementation("com.novatecgmbh.eventsourcing.axon.apis:common")
+  api(project(":apis:common"))
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
   implementation("io.opentracing.contrib:opentracing-spring-jaeger-cloud-starter")

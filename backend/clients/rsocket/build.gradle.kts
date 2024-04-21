@@ -1,8 +1,8 @@
 plugins {
-  id("com.novatecgmbh.commons-kotlin")
+  id("yatt.kotlin-conventions")
   id("org.springframework.boot")
   kotlin("plugin.spring")
-  kotlin("jvm") version "1.6.20"
+  kotlin("jvm")
 }
 
 group = "${group}.clients"

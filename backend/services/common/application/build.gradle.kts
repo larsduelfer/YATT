@@ -1,5 +1,5 @@
 plugins {
-  id("com.novatecgmbh.commons-kotlin")
+  id("yatt.kotlin-conventions")
   id("io.spring.dependency-management")
   kotlin("plugin.spring")
   kotlin("plugin.jpa")
@@ -8,7 +8,7 @@ plugins {
 group = "${group}.common"
 
 dependencies {
-  implementation("com.novatecgmbh.eventsourcing.axon.common:api")
+  implementation(project(":services:common:api"))
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
   implementation("io.projectreactor:reactor-core")

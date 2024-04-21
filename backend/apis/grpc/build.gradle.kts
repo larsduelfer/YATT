@@ -1,6 +1,6 @@
 plugins {
   id("com.google.protobuf") version "0.8.18"
-  id("com.novatecgmbh.commons-kotlin")
+   id("yatt.kotlin-conventions")
   id("io.spring.dependency-management")
   kotlin("plugin.spring")
 }
@@ -8,8 +8,8 @@ plugins {
 group = "${group}.apis"
 
 dependencies {
-  implementation("com.novatecgmbh.eventsourcing.axon.apis:common")
-  implementation("com.novatecgmbh.eventsourcing.axon.apis:grpc-lib")
+  api(project(":apis:common"))
+  api(project(":apis:grpc-lib"))
 
   implementation("io.projectreactor:reactor-core")
   implementation("jakarta.annotation:jakarta.annotation-api:1.3.5")

@@ -1,15 +1,16 @@
 plugins {
-  id("com.novatecgmbh.commons-kotlin")
+  id("yatt.kotlin-conventions")
   id("org.springframework.boot")
   kotlin("plugin.spring")
-  kotlin("jvm") version "1.6.20"
+  kotlin("jvm")
 }
 
 group = "${group}.clients"
 
 dependencies {
+  implementation(project(":apis:grpc-lib"))
+
   implementation("com.google.protobuf:protobuf-java-util:3.19.2")
-  implementation("com.novatecgmbh.eventsourcing.axon.apis:grpc-lib")
   implementation("net.devh:grpc-client-spring-boot-starter:2.13.1.RELEASE")
   implementation("org.springframework.boot:spring-boot-starter")
   implementation("org.springframework.boot:spring-boot-starter")

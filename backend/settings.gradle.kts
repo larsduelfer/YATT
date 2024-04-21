@@ -1,13 +1,52 @@
-// This is an empty umbrella build including all the component builds.
-// This build is not necessarily needed. The component builds work independently.
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        maven("https://repo.spring.io/milestone")
+        maven("https://repo.spring.io/snapshot")
+    }
+
+    val springBootVersion: String by settings
+    val kotlinVersion: String by settings
+    val springDependencyManagementPluginVersion: String by settings
+    plugins {
+        id("io.spring.dependency-management") version springDependencyManagementPluginVersion
+        id("org.springframework.boot") version springBootVersion
+        kotlin("jvm") version kotlinVersion
+        kotlin("plugin.jpa") version kotlinVersion
+        kotlin("plugin.spring") version kotlinVersion
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+        maven ("https://repo.spring.io/milestone")
+        maven("https://repo.spring.io/snapshot")
+    }
+}
+
 rootProject.name = "backend"
 
-includeBuild("platforms")
-includeBuild("build-logic")
+include(":services:common:api")
+include(":services:common:application")
+include(":services:common:auditing")
+include(":services:common:schema-export")
+include(":services:user:api")
+include(":services:user:application")
+include(":services:company:api")
+include(":services:company:application")
+include(":services:project:api")
+include(":services:project:application")
 
-includeBuild("data-import")
+include(":apis:common")
+include(":apis:graphql")
+include(":apis:grpc")
+include(":apis:grpc-lib")
+include(":apis:rest")
+include(":apis:rsocket")
 
-includeBuild("apis")
-includeBuild("services")
+include(":data-import:initial")
 
-includeBuild("clients")
+include(":clients:grpc")
+include(":clients:rsocket")

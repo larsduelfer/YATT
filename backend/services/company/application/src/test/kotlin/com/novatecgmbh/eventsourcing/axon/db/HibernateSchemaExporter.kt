@@ -26,7 +26,7 @@ internal class HibernateSchemaExporter {
 
   /** Export schema for mysql database. */
   @Test
-  fun exportMySqlSchema() {
+  fun exportPostgresSchema() {
     schemaExporter.exportSchema(
         bean,
         PostgreSQL10Dialect::class.java,

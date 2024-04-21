@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="API - gRPC" type="JetRunConfigurationType">
     <option name="MAIN_CLASS_NAME" value="com.novatecgmbh.eventsourcing.axon.GrpcApiKt" />
-    <module name="apis.grpc.main" />
+    <module name="backend.apis.grpc.main" />
     <shortenClasspath name="NONE" />
     <method v="2">
       <option name="Make" enabled="true" />

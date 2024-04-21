@@ -1,5 +1,5 @@
 plugins {
-  id("com.novatecgmbh.commons-kotlin")
+  id("yatt.kotlin-conventions")
   id("io.spring.dependency-management")
   id("com.google.osdetector") version "1.7.0"
   kotlin("plugin.spring")
@@ -8,7 +8,7 @@ plugins {
 group = "${group}.apis"
 
 dependencies {
-  implementation("com.novatecgmbh.eventsourcing.axon.apis:common")
+  api(project(":apis:common"))
 
   if (osdetector.arch.equals("aarch_64")) {
     implementation("io.netty:netty-all")

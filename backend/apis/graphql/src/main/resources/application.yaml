@@ -18,6 +18,9 @@ spring:
         jwt:
           issuer-uri: http://localhost:8999/realms/eventsourcing-with-axon
 
+server:
+  port: 8088
+
 app:
   cors:
     allowed-origins: http://localhost:3000

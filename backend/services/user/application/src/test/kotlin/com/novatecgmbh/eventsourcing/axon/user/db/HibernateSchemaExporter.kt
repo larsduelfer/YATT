@@ -1,5 +1,6 @@
 package com.novatecgmbh.eventsourcing.axon.user.db
 
+import com.novatecgmbh.eventsourcing.axon.db.SchemaExporter
 import org.h2.Driver
 import org.hibernate.dialect.H2Dialect
 import org.hibernate.dialect.PostgreSQL10Dialect
@@ -26,7 +27,7 @@ internal class HibernateSchemaExporter {
 
   /** Export schema for mysql database. */
   @Test
-  fun exportMySqlSchema() {
+  fun exportPostgresSchema() {
     schemaExporter.exportSchema(
         bean,
         PostgreSQL10Dialect::class.java,

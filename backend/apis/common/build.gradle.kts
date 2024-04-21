@@ -1,5 +1,5 @@
 plugins {
-  id("com.novatecgmbh.commons-kotlin")
+  id("yatt.kotlin-conventions")
   id("io.spring.dependency-management")
   kotlin("plugin.spring")
 }
@@ -7,11 +7,11 @@ plugins {
 group = "${group}.apis"
 
 dependencies {
-  api("com.novatecgmbh.eventsourcing.axon.common:api")
-  api("com.novatecgmbh.eventsourcing.axon.common:auditing")
-  api("com.novatecgmbh.eventsourcing.axon.company:api")
-  api("com.novatecgmbh.eventsourcing.axon.project:api")
-  api("com.novatecgmbh.eventsourcing.axon.user:api")
+  api(project(":services:common:api"))
+  api(project(":services:common:auditing"))
+  api(project(":services:company:api"))
+  api(project(":services:project:api"))
+  api(project(":services:user:api"))
 
   implementation("org.axonframework:axon-spring-boot-starter")
   implementation("org.axonframework.extensions.kotlin:axon-kotlin")

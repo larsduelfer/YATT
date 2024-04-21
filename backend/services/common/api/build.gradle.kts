@@ -1,5 +1,5 @@
 plugins {
-    id("com.novatecgmbh.commons-kotlin")
+    id("yatt.kotlin-conventions")
     kotlin("plugin.jpa")
 }
 
