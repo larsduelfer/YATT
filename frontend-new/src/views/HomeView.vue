@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import UserNameComponent from '@/components/UserNameComponent.vue';
 import { useAuth } from 'vue3-oidc';
 
 const { signoutRedirect } = useAuth()
@@ -11,6 +12,7 @@ const singnout = () => {
 
 <template>
   <div>
+    <UserNameComponent/>
     <button @click="singnout!()">Signout</button>
   </div>
 </template>
