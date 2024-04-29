@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuth, useOidcStore } from 'vue3-oidc'
+import { useOidcStore } from 'vue3-oidc'
 
 const oidcState = useOidcStore()
 
@@ -13,17 +13,27 @@ const router = createRouter({
     {
       path: '/sign-in',
       name: 'SignIn',
-      component: () => import('../views/SignInView.vue')
+      component: () => import('../pages/SignInPage.vue')
     },
     {
-      path: '/home',
-      name: 'Home',
-      component: () => import('../views/HomeView.vue')
+      path: '/sign-out',
+      name: 'SignOut',
+      component: () => import('../pages/SignOutPage.vue')
+    },
+    {
+      path: '/projects',
+      name: 'Projects',
+      component: () => import('../pages/ProjectsPage.vue')
+    },
+    {
+      path: '/companies',
+      name: 'Companies',
+      component: () => import('../pages/CompaniesPage.vue')
     },
     {
       path: '/oidc-callback',
       name: 'OidcCallback',
-      component: () => import('../views/CallBackView.vue')
+      component: () => import('../pages/CallBackPage.vue')
     }
   ]
 })
@@ -38,7 +48,7 @@ router.beforeEach((to, from) => {
   }
   if (!isAuthenticated && to.name !== 'SignIn') {
     console.log('User is not authenticated, redirecting to /sign-in')
-    return { name: 'SignIn' }    
+    return { name: 'SignIn' }
   }
 })
 

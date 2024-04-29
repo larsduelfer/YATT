@@ -2,14 +2,10 @@
 import { useAuth } from 'vue3-oidc';
 
 const { signinRedirect } = useAuth()
-
-const signin = () => {
-  signinRedirect()
-}
 </script>
 
 <template>
-  <div>
-    <button @click="signin">Signin</button>
-  </div>
+  <v-app>
+    <button @click="signinRedirect()">Signin</button>
+  </v-app>
 </template>

@@ -15,14 +15,7 @@ onMounted(async () => {
     user = (await userManager.value?.signinRedirectCallback()) || null
   }
   actions.value.setUser(user!)
-  router.push('/home')
+  router.push('/projects')
 })
 </script>
 
-<template>
-  <div>
-    <h1>OIDC-CALLBACK</h1>
-  </div>
-</template>
-
-<style lang="less" scoped></style>
