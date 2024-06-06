@@ -27,7 +27,7 @@ const companiesQueryResult = useQuery<CompaniesQueryResults>(gql`
   }
 `)
 
-const companies: Ref<Project[]> = ref([])
+const companies: Ref<Company[]> = ref([])
 
 companiesQueryResult.onResult((result, _) => {
   companies.value = result.data.companies
