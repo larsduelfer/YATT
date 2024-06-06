@@ -11,3 +11,10 @@ logging:
   level:
     root: info
     #io.rsocket.FrameLogger: debug
+
+spring:
+  shell:
+    interactive:
+      enabled: true
+    script:
+      enabled: true
