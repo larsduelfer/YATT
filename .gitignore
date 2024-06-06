@@ -69,3 +69,5 @@ out/
 **/.gradle
 **/build
 **/bin
+
+.DS_STORE
