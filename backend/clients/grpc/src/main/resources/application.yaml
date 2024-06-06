@@ -12,3 +12,10 @@ grpc:
         clientAuthEnabled: false
         trust-store: classpath:certs/server-truststore.jks
         trust-store-password: server
+
+spring:
+  shell:
+    interactive:
+      enabled: true
+    script:
+      enabled: true
