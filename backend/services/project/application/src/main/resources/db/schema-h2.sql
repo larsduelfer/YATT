@@ -79,8 +79,8 @@
 
     create table project_acls (
         aggregate_identifier varchar(255) not null,
-        aggregate_type varchar(255) not null check (aggregate_type in ('PROJECT','COMPANY')),
-        permission varchar(255) not null check (permission in ('CREATE_PROJECT','ACCESS_PROJECT')),
+        aggregate_type enum ('COMPANY','PROJECT') not null,
+        permission enum ('ACCESS_PROJECT','CREATE_PROJECT') not null,
         identifier varchar(255) not null,
         primary key (aggregate_identifier, aggregate_type, permission, identifier)
     );
@@ -112,7 +112,7 @@
         deadline date not null,
         name varchar(255) not null,
         planned_start_date date not null,
-        status varchar(255) not null check (status in ('ON_TIME','DELAYED')),
+        status enum ('DELAYED','ON_TIME') not null,
         version bigint not null,
         primary key (identifier)
     );
