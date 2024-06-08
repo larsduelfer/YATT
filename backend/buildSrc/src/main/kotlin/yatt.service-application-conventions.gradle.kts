@@ -22,6 +22,7 @@ dependencies {
   implementation("org.axonframework.extensions.kotlin:axon-kotlin")
   implementation("org.axonframework.extensions.tracing:axon-tracing-spring-boot-starter")
   implementation("org.flywaydb:flyway-core")
+  implementation("org.flywaydb:flyway-database-postgresql")
   implementation("org.postgresql:postgresql")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
