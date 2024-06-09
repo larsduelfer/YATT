@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="RSocket Client for user test2" type="JetRunConfigurationType">
+    <envs>
+      <env name="CUSTOM_AUTH_USERNAME" value="test2" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="com.novatecgmbh.rsocket.client.demo.RSocketDemoClientKt" />
+    <module name="backend.clients.rsocket.main" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
