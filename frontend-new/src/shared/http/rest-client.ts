@@ -5,7 +5,7 @@ const oidcState = useOidcStore()
 
 function createAxios(): AxiosInstance {
   return axios.create({
-    baseURL: 'http://localhost:8080',
+    baseURL: import.meta.env.VITE_REST_API_URL,
     timeout: 1000,
     headers: { Authorization: 'Bearer ' + oidcState.state.value.token }
   })

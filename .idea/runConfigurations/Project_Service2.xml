@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Project Service" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" folderName="Service Components">
+    <module name="backend.services.project.project-service.main" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.novatecgmbh.eventsourcing.axon.ProjectApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

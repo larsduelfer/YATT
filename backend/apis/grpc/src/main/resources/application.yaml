@@ -1,3 +1,8 @@
+axon:
+  extension:
+    tracing:
+      enabled: false
+
 spring:
   application:
     name: grpc-api

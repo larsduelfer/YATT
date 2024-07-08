@@ -1,9 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="RSocket API" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" folderName="APIs">
-    <module name="apis.rsocket.main" />
-    <option name="SPRING_BOOT_MAIN_CLASS" value="com.novatecgmbh.eventsourcing.axon.RsocketApi" />
+    <module name="backend.apis.rsocket.main" />
     <option name="PROGRAM_PARAMETERS" value="--server.port=8086" />
-    <option name="ALTERNATIVE_JRE_PATH" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.novatecgmbh.eventsourcing.axon.RsocketApi" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

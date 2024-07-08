@@ -9,9 +9,9 @@ group = "${group}.initial-data-import"
 dependencies {
   implementation(project(":services:common:api"))
   implementation(project(":services:common:auditing"))
-  implementation(project(":services:company:api"))
-  implementation(project(":services:project:api"))
-  implementation(project(":services:user:api"))
+  implementation(project(":services:company:company-api"))
+  implementation(project(":services:project:project-api"))
+  implementation(project(":services:user:user-api"))
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
   implementation("io.opentracing.contrib:opentracing-spring-jaeger-cloud-starter")

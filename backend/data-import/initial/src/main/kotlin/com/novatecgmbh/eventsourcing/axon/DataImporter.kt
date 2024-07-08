@@ -17,13 +17,17 @@ import java.util.concurrent.CompletableFuture
 import kotlin.streams.toList
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.springframework.boot.CommandLineRunner
+import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.stereotype.Component
 
 const val numProjects = 50
 const val numTasksPerProject = 1000
 
 @Component
-class DataImporter(private val commandGateway: CommandGateway) : CommandLineRunner {
+class DataImporter(
+    private val commandGateway: CommandGateway,
+    private val context: ConfigurableApplicationContext
+) : CommandLineRunner {
     private val userIds = listOf(UserId(), UserId(), UserId())
     private val companyIds = listOf(CompanyId(), CompanyId(), CompanyId())
     private val createProjectCommands = mutableMapOf<UserId, MutableList<CreateProjectCommand>>()
@@ -48,6 +52,8 @@ class DataImporter(private val commandGateway: CommandGateway) : CommandLineRunn
                 }
             }
         }
+
+        context.close()
     }
 
     private fun registerUsers() {

@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+    custom/tier: backend    
+spec:
+  replicas: {{ .Values.replicas }}
+  template:
+    metadata:
+      name: {{ .Chart.Name }}
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      serviceAccountName: {{ .Chart.Name }}
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox:1.31.1
+        command: ['sh', '-c', 'until nc -z yatt-postgresql 5432; do echo waiting for postgres; sleep 2; done;']
+      - name: wait-for-axon-server
+        image: busybox:1.31.1
+        command: ['sh', '-c', 'until nc -z yatt-axon-server-se 8124; do echo waiting for axon server; sleep 2; done;']  
+      containers:
+      - name: {{ .Chart.Name }}
+        image: larsduelfer842/yatt:project-service
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "250Mi"
+          limits:
+            memory: "500Mi"
+        securityContext:
+          allowPrivilegeEscalation: false
+          privileged: false
+          runAsNonRoot: true
+          capabilities:
+            drop:
+              - ALL
+        env:
+        - name: AXON_AXONSERVER_SERVERS
+          value: yatt-axon-server-se:8124
+        - name: AXON_EXTENSION_TRACING_ENABLED
+          value: "false"
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:postgresql://yatt-postgresql:5432/projectdb?user=projectapp&password=axon        
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}

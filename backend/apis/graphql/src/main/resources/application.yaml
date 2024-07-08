@@ -1,3 +1,12 @@
+yatt:
+  cors:
+    origins: http://localhost:3000
+  jwt:
+    issuer:
+      uri: http://localhost:8999/realms/eventsourcing-with-axon
+    jwks:
+      uri: http://localhost:8999/realms/eventsourcing-with-axon/protocol/openid-connect/certs
+
 spring:
   application:
     name: graphql-api
@@ -16,14 +25,10 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8999/realms/eventsourcing-with-axon
-
+          issuer-uri: ${yatt.jwt.issuer.uri}
+          jwk-set-uri: ${yatt.jwt.jwks.uri}
 server:
   port: 8088
-
-app:
-  cors:
-    allowed-origins: http://localhost:3000
 
 logging:
   level:

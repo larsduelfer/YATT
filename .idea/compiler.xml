@@ -67,6 +67,12 @@
       <module name="backend.common-spring-webmvc.test" target="11" />
       <module name="backend.common-webmvc.main" target="11" />
       <module name="backend.common-webmvc.test" target="11" />
+      <module name="backend.services.user.api.main" target="17" />
+      <module name="backend.services.user.api.test" target="17" />
+      <module name="backend.services.user.application.main" target="17" />
+      <module name="backend.services.user.application.test" target="17" />
+      <module name="backend.services.user.user-application.main" target="17" />
+      <module name="backend.services.user.user-application.test" target="17" />
       <module name="build-logic.commons-kotlin" target="17" />
       <module name="build-logic.commons-kotlin.main" target="17" />
       <module name="build-logic.commons-kotlin.test" target="17" />

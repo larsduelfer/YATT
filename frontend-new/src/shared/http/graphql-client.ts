@@ -28,7 +28,7 @@ const authLink = setContext((_, { headers }) => {
 // WebSocket connection to the API
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: 'ws://localhost:8088/wsgraphql',
+    url: import.meta.env.VITE_GRAPHQL_WS_API_URL,
     lazy: true,
     connectionParams: () => {
       return {
@@ -41,7 +41,7 @@ const wsLink = new GraphQLWsLink(
 // HTTP connection to the API
 const httpLink = createHttpLink({
   // You should use an absolute URL here
-  uri: 'http://localhost:8088/graphql'
+  uri: import.meta.env.VITE_GRAPHQL_HTTP_API_URL
 })
 
 // Handle errors

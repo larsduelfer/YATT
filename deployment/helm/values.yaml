@@ -1,0 +1,100 @@
+axon-server-se:
+  image:
+    repository: axoniq/axonserver
+    tag: 2024.1.0-jdk-17
+  properties: 
+    kind: InlineConfigMap   
+    content: |
+      axoniq.axonserver.accesscontrol.enabled=false
+      axoniq.axonserver.standalone=true
+  services:
+    httpService:
+      type: ClusterIP
+
+cert-manager:
+  crds:
+    enabled: true
+
+ingress-nginx:
+  controller:
+    metrics:
+      enabled: true
+
+keycloak:
+  adminIngress:
+    annotations:
+      cert-manager.io/issuer: "letsencrypt-prod"
+    enabled: true
+    hostname: admin.yatt.stackit.run
+    ingressClassName: nginx
+    tls: true
+  auth:
+    adminUser: keycloak
+    adminPassword: keycloak  
+  externalDatabase:
+    host: yatt-postgresql
+    user: keycloak
+    password: keycloak
+    database: keycloakdb
+    port: 5432
+  extraEnvVars:
+    - name : KEYCLOAK_EXTRA_ARGS
+      value: '--import-realm'
+  extraVolumes:
+    - configMap:
+        name: yatt-keycloak-realm-config
+      name: yatt-keycloak-realm-config
+  extraVolumeMounts:
+    - name: yatt-keycloak-realm-config
+      mountPath: /opt/bitnami/keycloak/data/import/realm.json
+      subPath: realm.json
+      readOnly: true
+  ingress:
+    annotations:
+      cert-manager.io/issuer: "letsencrypt-prod"
+    enabled: true    
+    hostname: auth.yatt.stackit.run
+    ingressClassName: nginx
+    tls: true
+  postgresql:
+    enabled: false
+
+
+postgresql:
+  auth:
+    postgresPassword: postgres
+  primary:
+    initdb:
+      scripts: 
+        initdb.sql: |
+          CREATE USER userapp WITH PASSWORD 'axon' CREATEDB;
+          CREATE DATABASE userdb
+              WITH
+              OWNER = userapp
+              ENCODING = 'UTF8'
+              TABLESPACE = pg_default
+              CONNECTION LIMIT = -1;
+
+          CREATE USER companyapp WITH PASSWORD 'axon' CREATEDB;
+          CREATE DATABASE companydb
+              WITH
+              OWNER = companyapp
+              ENCODING = 'UTF8'
+              TABLESPACE = pg_default
+              CONNECTION LIMIT = -1;
+
+          CREATE USER projectapp WITH PASSWORD 'axon' CREATEDB;
+          CREATE DATABASE projectdb
+              WITH
+              OWNER = projectapp
+              ENCODING = 'UTF8'
+              TABLESPACE = pg_default
+              CONNECTION LIMIT = -1;
+        
+          CREATE USER keycloak WITH PASSWORD 'keycloak' CREATEDB;
+          CREATE DATABASE keycloakdb
+              WITH
+              OWNER = keycloak
+              ENCODING = 'UTF8'
+              TABLESPACE = pg_default
+              CONNECTION LIMIT = -1;

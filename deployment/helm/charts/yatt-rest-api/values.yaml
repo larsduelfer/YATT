@@ -1,0 +1,4 @@
+replicas: 1
+host: rest.api.yatt.stackit.run
+appHost: https://app.yatt.stackit.run
+authHost: auth.yatt.stackit.run
