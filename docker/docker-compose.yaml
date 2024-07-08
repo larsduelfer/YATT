@@ -20,7 +20,7 @@ services:
       - "8090:8080"
 
   axonserver:
-    image: axoniq/axonserver:2024.0.0-jdk-17
+    image: axoniq/axonserver:2024.0.4-jdk-17
     hostname: axonserver
     volumes:
       - type: bind
