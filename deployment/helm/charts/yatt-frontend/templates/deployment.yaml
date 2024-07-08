@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+    custom/tier: frontend    
+spec:
+  replicas: {{ .Values.replicas }}
+  template:
+    metadata:
+      name: {{ .Chart.Name }}
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      serviceAccountName: {{ .Chart.Name }}     
+      containers:
+      - name: {{ .Chart.Name }}
+        image: larsduelfer842/yatt:frontend
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "100Mi"
+          limits:
+            memory: "100Mi"
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}

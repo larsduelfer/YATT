@@ -6,7 +6,7 @@ import { createOidc, useOidcStore } from 'vue3-oidc'
 const { state } = useOidcStore()
 
 const oidcSettings: VueOidcSettings = {
-  authority: 'http://localhost:8999/realms/eventsourcing-with-axon/',
+  authority: import.meta.env.VITE_AUTH_URL,
   scope: 'openid',
   client_id: 'my-backend',
   // client_secret: "your client secret",

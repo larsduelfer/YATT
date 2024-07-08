@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-keycloak-master-realm-config
+  labels:
+    app: {{ .Chart.Name }}
+data:
+  master.json: |
+    {
+        "realm" : "master",
+        "attributes": {
+          "frontendUrl": "http://localhost:8999"
+        }
+    }

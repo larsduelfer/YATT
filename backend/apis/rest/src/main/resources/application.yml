@@ -1,3 +1,12 @@
+yatt:
+  cors:
+    origins: http://localhost:3000
+  jwt:
+    issuer:
+      uri: http://localhost:8999/realms/eventsourcing-with-axon
+    jwks:
+      uri: http://localhost:8999/realms/eventsourcing-with-axon/protocol/openid-connect/certs
+
 spring:
   application:
     name: rest-api
@@ -8,12 +17,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8999/realms/eventsourcing-with-axon
-          jwk-set-uri: http://localhost:8999/realms/eventsourcing-with-axon/protocol/openid-connect/certs
-
-app:
-  cors:
-    allowed-origins: http://localhost:3000
+          issuer-uri: ${yatt.jwt.issuer.uri}
+          jwk-set-uri: ${yatt.jwt.jwks.uri}
 
 logging:
   level:

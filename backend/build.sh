@@ -1,19 +1,19 @@
 #!/bin/bash
 
 echo "Building Service - User API ..."
-./gradlew :services:user:api:build
-echo "Building Service - User Application ..."
-./gradlew :services:user:application:build
+./gradlew :services:user:user-api:build
+echo "Building Service - User Service ..."
+./gradlew :services:user:user-service:build
 
 echo "Building Service - Company API ..."
-./gradlew :services:company:api:build
-echo "Building Service - Company Application ..."
-./gradlew :services:company:application:build
+./gradlew :services:company:company-api:build
+echo "Building Service - Company Service ..."
+./gradlew :services:company:company-service:build
 
 echo "Building Service - Project API ..."
-./gradlew :services:project:api:build
-echo "Building Service - Project Application ..."
-./gradlew :services:project:application:build
+./gradlew :services:project:project-api:build
+echo "Building Service - Project Service ..."
+./gradlew :services:project:project-service:build
 
 echo "Building Data Importer ..."
 ./gradlew :data-import:initial:build

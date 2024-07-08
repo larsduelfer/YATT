@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+    custom/tier: backend    
+spec:
+  replicas: {{ .Values.replicas }}
+  template:
+    metadata:
+      name: {{ .Chart.Name }}
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      serviceAccountName: {{ .Chart.Name }}
+      initContainers:
+      - name: wait-for-axon-server
+        image: busybox:1.31.1
+        command: ['sh', '-c', 'until nc -z yatt-axon-server-se 8124; do echo waiting for axon server; sleep 2; done;']  
+      containers:
+      - name: {{ .Chart.Name }}
+        image: larsduelfer842/yatt:graphql-api
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "250Mi"
+          limits:
+            memory: "500Mi"
+        ports:
+        - containerPort: 8088
+        securityContext:
+          allowPrivilegeEscalation: false
+          privileged: false
+          runAsNonRoot: true
+          capabilities:
+            drop:
+              - ALL
+        env:
+        - name: AXON_AXONSERVER_SERVERS
+          value: yatt-axon-server-se:8124
+        - name: AXON_EXTENSION_TRACING_ENABLED
+          value: "false"
+        - name: YATT_CORS_ORIGINS
+          value: {{ .Values.appHost }}
+        - name: YATT_JWT_ISSUER_URI
+          value: https://{{ .Values.authHost }}/realms/eventsourcing-with-axon
+        - name: YATT_JWT_JWKS_URI
+          value: https://{{ .Values.authHost }}/realms/eventsourcing-with-axon/protocol/openid-connect/certs
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}

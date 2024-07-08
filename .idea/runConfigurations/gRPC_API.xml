@@ -1,9 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="gRPC API" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" folderName="APIs">
-    <module name="apis.grpc.main" />
-    <option name="SPRING_BOOT_MAIN_CLASS" value="com.novatecgmbh.eventsourcing.axon.GrpcApi" />
+    <module name="backend.apis.grpc.main" />
     <option name="PROGRAM_PARAMETERS" value="--grpc.server.port=8089" />
-    <option name="ALTERNATIVE_JRE_PATH" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.novatecgmbh.eventsourcing.axon.GrpcApi" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

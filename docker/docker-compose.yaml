@@ -1,5 +1,43 @@
-version: '3.3'
 services:
+  # user-service:
+  #   image: larsduelfer842/yatt:user-service
+  #   environment:
+  #     AXON_AXONSERVER_SERVERS: axonserver:8124
+  #     AXON_EXTENSION_TRACING_ENABLED: false
+  #     SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/userdb
+      
+  # company-service:
+  #   image: larsduelfer842/yatt:company-service
+  #   environment:
+  #     AXON_AXONSERVER_SERVERS: axonserver:8124
+  #     AXON_EXTENSION_TRACING_ENABLED: false
+  #     SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/companydb
+
+  # project-service:
+  #   image: larsduelfer842/yatt:project-service
+  #   environment:
+  #     AXON_AXONSERVER_SERVERS: axonserver:8124
+  #     AXON_EXTENSION_TRACING_ENABLED: false
+  #     SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/projectdb
+
+  # rest-api:
+  #   image: larsduelfer842/yatt:rest-api
+  #   environment:
+  #     AXON_AXONSERVER_SERVERS: axonserver:8124
+  #     AXON_EXTENSION_TRACING_ENABLED: false
+  #     YATT_KEYCLOAK_HOST: http://keycloak:8080
+  #   ports:
+  #     - "8080:8080"
+  
+  # graphql-api:
+  #   image: larsduelfer842/yatt:graphql-api
+  #   environment:
+  #     AXON_AXONSERVER_SERVERS: axonserver:8124
+  #     AXON_EXTENSION_TRACING_ENABLED: false
+  #     YATT_KEYCLOAK_HOST: http://keycloak:8080
+  #   ports:
+  #     - "8088:8088"
+
   db:
     image: postgres:16.3-alpine
     restart: always
@@ -20,15 +58,15 @@ services:
       - "8090:8080"
 
   axonserver:
-    image: axoniq/axonserver:2024.0.4-jdk-17
+    image: axoniq/axonserver:2024.1.0-jdk-17
     hostname: axonserver
     volumes:
       - type: bind
         source: ../axonserver/data
-        target: /data
+        target: /axonserver/data
       - type: bind
         source: ../axonserver/config
-        target: /config
+        target: /axonserver/config
         read_only: true
     ports:
       - "8024:8024"
@@ -40,8 +78,8 @@ services:
     depends_on:
       - keycloak-db
     environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: 1234
+      KEYCLOAK_ADMIN: keycloak
+      KEYCLOAK_ADMIN_PASSWORD: keycloak
       DB_VENDOR: postgres
       DB_ADDR: keycloak-db
       DB_PORT: 5432

@@ -1,0 +1,15 @@
+dependencies:
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 15.5.6
+- name: keycloak
+  repository: https://charts.bitnami.com/bitnami
+  version: 21.6.1
+- name: ingress-nginx
+  repository: https://kubernetes.github.io/ingress-nginx
+  version: 4.11.1
+- name: cert-manager
+  repository: https://charts.jetstack.io
+  version: v1.15.1
+digest: sha256:7af8878b294016159aaf24ee8b90b5cb1812489968d7dbe3d7c3ed6e7554674f
+generated: "2024-07-21T21:48:21.121545+02:00"
