@@ -7,7 +7,7 @@ export interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  participants: new Array<Participant>()
+  participants: (_) => new Array<Participant>()
 })
 
 const emit = defineEmits(['addParticipant', 'removeParticipant'])

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { shallowRef } from 'vue';
-import { type Task } from '../api/task-api';
+import {shallowRef} from 'vue';
+import {type Task} from '../api/task-api';
 
 export interface Props {
   loading: boolean
@@ -9,7 +9,7 @@ export interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   loading: true,
-  tasks: new Array<Task>()
+  tasks: (_) => new Array<Task>()
 })
 
 const emit = defineEmits(['createTask', 'taskSelected'])
@@ -18,10 +18,10 @@ const tableHeight = shallowRef(100)
 const tableContainer = shallowRef()
 
 const headers = [
-  { title: 'Name', align: 'start', key: 'name' },
-  { title: 'Status', align: 'start', key: 'status' },
-  { title: 'Start Date', align: 'start', key: 'startDate' },
-  { title: 'End Date', align: 'start', key: 'endDate' }
+  {title: 'Name', align: 'start', key: 'name'},
+  {title: 'Status', align: 'start', key: 'status'},
+  {title: 'Start Date', align: 'start', key: 'startDate'},
+  {title: 'End Date', align: 'start', key: 'endDate'}
 ]
 
 function onResize() {
@@ -37,16 +37,16 @@ function getStatusColor(value: String): String {
 <template>
   <div v-resize="onResize" ref="tableContainer">
     <v-data-table-virtual
-      :height="tableHeight"
-      :headers="headers"
-      :items="props.tasks"
-      :hover="true"
-      :loading="props.loading"
-      item-value="identifier"
-      fixed-header
-      density="compact"
-      :sort-by="[{ key: 'name', order: 'asc' }]"
-      @click:row="
+        :height="tableHeight"
+        :headers="headers"
+        :items="props.tasks"
+        :hover="true"
+        :loading="props.loading"
+        item-value="identifier"
+        fixed-header
+        density="compact"
+        :sort-by="[{ key: 'name', order: 'asc' }]"
+        @click:row="
         (item, row) => {
           emit('taskSelected', row.item.identifier)
         }
@@ -56,12 +56,12 @@ function getStatusColor(value: String): String {
         <v-toolbar density="compact" class="pr-2">
           <v-spacer></v-spacer>
           <v-btn
-            color="primary"
-            density="comfortable"
-            elevation="2"
-            prepend-icon="mdi-plus"
-            rounded="lg"
-            @click="$emit('createTask')"
+              color="primary"
+              density="comfortable"
+              elevation="2"
+              prepend-icon="mdi-plus"
+              rounded="lg"
+              @click="$emit('createTask')"
           >
             Task
           </v-btn>
