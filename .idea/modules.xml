@@ -6,7 +6,6 @@
       <module fileurl="file://$PROJECT_DIR$/deployment/deployment.iml" filepath="$PROJECT_DIR$/deployment/deployment.iml" />
       <module fileurl="file://$PROJECT_DIR$/docker/docker.iml" filepath="$PROJECT_DIR$/docker/docker.iml" />
       <module fileurl="file://$PROJECT_DIR$/frontend/frontend.iml" filepath="$PROJECT_DIR$/frontend/frontend.iml" />
-      <module fileurl="file://$PROJECT_DIR$/frontend-new/frontend-new.iml" filepath="$PROJECT_DIR$/frontend-new/frontend-new.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/services/user/command-query/user.command-query.main.iml" filepath="$PROJECT_DIR$/.idea/modules/services/user/command-query/user.command-query.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/services/user/command-query/user.command-query.test.iml" filepath="$PROJECT_DIR$/.idea/modules/services/user/command-query/user.command-query.test.iml" />
     </modules>
