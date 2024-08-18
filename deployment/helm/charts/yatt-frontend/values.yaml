@@ -1,2 +1,3 @@
 replicas: 1
 host: app.yatt.stackit.run
+publicIP: 45.135.245.185
