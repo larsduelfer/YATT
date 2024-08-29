@@ -4,21 +4,19 @@ import gql from 'graphql-tag'
 import { ref } from 'vue'
 
 export interface Props {
-  projectIdentifier: string
-  projectVersion: number
-  projectName: string
+  taskIdentifier: string
+  taskName: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  projectIdentifier: '',
-  projectVersion: 0,
-  projectName: ''
+  taskIdentifier: '',
+  taskName: ''
 })
 
 const emit = defineEmits(['done', 'canceled'])
 
 const dialog = ref(true)
-const projectName = ref(props.projectName)
+const taskName = ref(props.taskName)
 
 const form = ref()
 const isFormValid = ref(false)
@@ -27,9 +25,8 @@ const formDisabled = ref(false)
 function onOk() {
   if (isFormValid.value) {
     renameProject({
-      identifier: props.projectIdentifier,
-      version: props.projectVersion,
-      name: projectName.value
+      identifier: props.taskIdentifier,
+      name: taskName.value
     })
       .then(
         () => {
@@ -54,8 +51,8 @@ function onCancel() {
 
 const { mutate: renameProject } = useMutation(
   gql`
-    mutation renameProject($identifier: ID!, $version: Int!, $name: String!) {
-      renameProject(identifier: $identifier, version: $version, name: $name)
+    mutation renameTask($identifier: ID!, $name: String!) {
+      renameTask(identifier: $identifier, name: $name)
     }
   `,
   { fetchPolicy: 'no-cache' }
@@ -66,11 +63,11 @@ const { mutate: renameProject } = useMutation(
   <div class="text-center pa-4">
     <v-dialog v-model="dialog" max-width="600" persistent>
       <v-form ref="form" v-model="isFormValid" :disabled="formDisabled" @submit.prevent>
-        <v-card prepend-icon="mdi-pen" title="Rename Project">
+        <v-card prepend-icon="mdi-pen" title="Rename Task">
           <v-card-text>
             <v-row>
               <v-col>
-                <v-text-field label="Project Name" v-model="projectName" required />
+                <v-text-field label="Task Name" v-model="taskName" required />
               </v-col>
             </v-row>
           </v-card-text>

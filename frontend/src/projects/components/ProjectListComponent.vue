@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import {ref} from 'vue'
-import {type Project} from '../api/project-api'
+import { ref } from 'vue'
+import { type Project } from '../api/project-api'
 
 export interface Props {
   projects: Project[]
@@ -16,11 +16,11 @@ const tableHeight = ref(100)
 const tableContainer = ref()
 
 const headers = [
-  {title: 'Name', align: 'start', key: 'name'},
-  {title: 'Status', align: 'start', key: 'status'},
-  {title: 'Start Date', align: 'start', key: 'startDate'},
-  {title: 'Deadline', align: 'start', key: 'deadline'},
-  {title: 'Actual End Date', align: 'start', key: 'actualEndDate'}
+  { title: 'Name', align: 'start', key: 'name' },
+  { title: 'Status', align: 'start', key: 'status' },
+  { title: 'Start Date', align: 'start', key: 'startDate' },
+  { title: 'Deadline', align: 'start', key: 'deadline' },
+  { title: 'Actual End Date', align: 'start', key: 'actualEndDate' }
 ]
 
 function onResize() {
@@ -37,15 +37,15 @@ function getStatusColor(value: String): String {
 <template>
   <div v-resize="onResize" ref="tableContainer">
     <v-data-table-virtual
-        :height="tableHeight"
-        :headers="headers"
-        :items="props.projects"
-        :hover="true"
-        item-value="identifier"
-        fixed-header
-        density="compact"
-        :sort-by="[{ key: 'name', order: 'asc' }]"
-        @click:row="
+      :height="tableHeight"
+      :headers="headers"
+      :items="props.projects"
+      :hover="true"
+      item-value="identifier"
+      fixed-header
+      density="compact"
+      :sort-by="[{ key: 'name', order: 'asc' }]"
+      @click:row="
         (item, row) => {
           emit('projectSelected', row.item.identifier)
         }
@@ -55,12 +55,12 @@ function getStatusColor(value: String): String {
         <v-toolbar density="compact" class="pr-2">
           <v-spacer></v-spacer>
           <v-btn
-              color="primary"
-              density="comfortable"
-              elevation="2"
-              prepend-icon="mdi-plus"
-              rounded="lg"
-              @click="$emit('createProject')"
+            color="primary"
+            density="comfortable"
+            elevation="2"
+            prepend-icon="mdi-plus"
+            rounded="lg"
+            @click="$emit('createProject')"
           >
             Project
           </v-btn>

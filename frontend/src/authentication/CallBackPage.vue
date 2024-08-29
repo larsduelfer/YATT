@@ -18,4 +18,3 @@ onMounted(async () => {
   router.push('/projects')
 })
 </script>
-

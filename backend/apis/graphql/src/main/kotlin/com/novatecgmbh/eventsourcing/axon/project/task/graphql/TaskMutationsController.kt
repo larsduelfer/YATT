@@ -26,7 +26,10 @@ class TaskMutationsController(val commandGateway: CommandGateway) {
         )
 
     @MutationMapping
-    fun renameTask(@Argument identifier: TaskId, @Argument name: String): CompletableFuture<Long> =
+    fun renameTask(
+        @Argument identifier: TaskId,
+        @Argument name: String
+    ): CompletableFuture<Long> =
         commandGateway.send(RenameTaskCommand(identifier, name))
 
     @MutationMapping

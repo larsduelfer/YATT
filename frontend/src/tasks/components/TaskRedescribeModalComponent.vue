@@ -4,21 +4,19 @@ import gql from 'graphql-tag'
 import { ref } from 'vue'
 
 export interface Props {
-  projectIdentifier: string
-  projectVersion: number
-  projectName: string
+  taskIdentifier: string
+  taskDescription: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  projectIdentifier: '',
-  projectVersion: 0,
-  projectName: ''
+  taskIdentifier: '',
+  taskDescription: ''
 })
 
 const emit = defineEmits(['done', 'canceled'])
 
 const dialog = ref(true)
-const projectName = ref(props.projectName)
+const taskDescription = ref(props.taskDescription)
 
 const form = ref()
 const isFormValid = ref(false)
@@ -26,10 +24,9 @@ const formDisabled = ref(false)
 
 function onOk() {
   if (isFormValid.value) {
-    renameProject({
-      identifier: props.projectIdentifier,
-      version: props.projectVersion,
-      name: projectName.value
+    changeDescriptionOfTask({
+      identifier: props.taskIdentifier,
+      description: taskDescription.value
     })
       .then(
         () => {
@@ -52,10 +49,10 @@ function onCancel() {
   emit('canceled')
 }
 
-const { mutate: renameProject } = useMutation(
+const { mutate: changeDescriptionOfTask } = useMutation(
   gql`
-    mutation renameProject($identifier: ID!, $version: Int!, $name: String!) {
-      renameProject(identifier: $identifier, version: $version, name: $name)
+    mutation changeDescriptionOfTask($identifier: ID!, $description: String!) {
+      changeDescriptionOfTask(identifier: $identifier, description: $description)
     }
   `,
   { fetchPolicy: 'no-cache' }
@@ -66,11 +63,11 @@ const { mutate: renameProject } = useMutation(
   <div class="text-center pa-4">
     <v-dialog v-model="dialog" max-width="600" persistent>
       <v-form ref="form" v-model="isFormValid" :disabled="formDisabled" @submit.prevent>
-        <v-card prepend-icon="mdi-pen" title="Rename Project">
+        <v-card prepend-icon="mdi-pen" title="Change Task Description">
           <v-card-text>
             <v-row>
               <v-col>
-                <v-text-field label="Project Name" v-model="projectName" required />
+                <v-textarea label="Task Description" v-model="taskDescription" required />
               </v-col>
             </v-row>
           </v-card-text>

@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { type Task } from '../api/task-api'
+import TodoListComponent from '@/tasks/components/TodoListComponent.vue'
+import { useMutation } from '@vue/apollo-composable'
+import gql from 'graphql-tag'
 
 export interface Props {
   isVisible: boolean
@@ -16,7 +19,7 @@ const emit = defineEmits([
   'redescribeTask',
   'renameTask',
   'rescheduleTask',
-  'unassignTask'
+  'createTodo'
 ])
 
 function closeDrawer(value: Boolean) {
@@ -29,6 +32,21 @@ function getStatusColor(value: String): String {
   if (value === 'COMPLETED') return 'green'
   else return 'grey'
 }
+
+function removeAssignee() {
+  unassignTask({
+    identifier: props.task?.identifier
+  })
+}
+
+const { mutate: unassignTask } = useMutation(
+  gql`
+    mutation unassignTask($identifier: ID!) {
+      unassignTask(identifier: $identifier)
+    }
+  `,
+  { fetchPolicy: 'no-cache' }
+)
 </script>
 
 <template>
@@ -107,7 +125,7 @@ function getStatusColor(value: String): String {
                 }})
               </div>
               <v-icon icon="mdi-pencil" size="x-small" @click="$emit('assignTask')" />
-              <v-icon icon="mdi-delete" size="x-small" @click="$emit('unassignTask')" />
+              <v-icon icon="mdi-delete" size="x-small" @click="removeAssignee()" />
             </div>
           </v-col>
         </v-row>
@@ -118,6 +136,12 @@ function getStatusColor(value: String): String {
       <section class="py-5">
         <h5 class="text-h6">ToDo's</h5>
       </section>
+      <TodoListComponent
+        :loading="false"
+        :task-identifier="task?.identifier"
+        :todos="task?.todos"
+        @create-todo="emit('createTodo')"
+      ></TodoListComponent>
     </div>
   </v-navigation-drawer>
 </template>

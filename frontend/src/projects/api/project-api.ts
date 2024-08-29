@@ -1,5 +1,4 @@
 import gql from 'graphql-tag'
-import { fi } from 'vuetify/locale'
 
 export type Project = {
   identifier: string

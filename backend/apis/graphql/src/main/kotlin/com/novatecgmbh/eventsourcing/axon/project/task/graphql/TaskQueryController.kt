@@ -48,7 +48,7 @@ class TaskQueryController(val queryGateway: QueryGateway) {
     fun tasks(@Argument projectIdentifier: ProjectId): CompletableFuture<List<TaskQueryResult>> =
         queryGateway.queryMany(TasksByProjectQuery(projectIdentifier))
 
-    @SubscriptionMapping("tasks")
+    @SubscriptionMapping("task")
     fun taskUpdates(@Argument projectIdentifier: ProjectId): Flux<TaskQueryResult> {
         val query =
             queryGateway.subscriptionQuery(

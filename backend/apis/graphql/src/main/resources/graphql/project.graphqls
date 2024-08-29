@@ -8,7 +8,7 @@ extend type Query {
 
 type Subscription {
     project: Project
-    tasks(projectIdentifier: ID!): Task
+    task(projectIdentifier: ID!): Task
 }
 
 extend type Mutation {
@@ -41,7 +41,7 @@ extend type Mutation {
         endDate: Date!
     ): ID!
     renameTask(
-        identifier: ID,
+        identifier: ID!,
         name: String!
     ): Int!
     rescheduleTask(

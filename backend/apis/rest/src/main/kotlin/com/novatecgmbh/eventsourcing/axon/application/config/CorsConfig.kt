@@ -10,6 +10,7 @@ import org.springframework.web.filter.CorsFilter
 
 @Configuration
 class CorsConfig {
+
     @Bean
     fun corsFilter(@Value("\${yatt.cors.origins}") allowedOrigins: List<String>?) =
         CorsFilter(
